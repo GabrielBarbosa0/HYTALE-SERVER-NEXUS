@@ -1,6 +1,10 @@
 # INICIADOR DO SERVIDOR HYTALE
 
-Aplicativo WinUI 3 em C# para escolher e controlar mundos do servidor dedicado do Hytale e o túnel do Playit.gg.
+Aplicativo para Windows, desenvolvido em C# e WinUI 3, que centraliza a seleção de mundos, a execução do servidor dedicado do Hytale e o túnel do Playit.gg em uma única interface.
+
+[![Interface do Iniciador do Servidor Hytale](images/iniciador-hytale-interface-1920x1080.png)](images/iniciador-hytale-interface-1920x1080.png)
+
+> [Baixar a versão mais recente](https://github.com/GabrielBarbosa0/INICIADOR-SERVIDOR-HYTALE/releases/latest) — instalador autocontido para Windows 64 bits.
 
 ## Interface gráfica
 
