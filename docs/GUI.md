@@ -116,10 +116,10 @@ dotnet publish src/HytaleServerManager/HytaleServerManager.csproj `
 Para gerar o instalador completo, com Inno Setup 6 instalado:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts\Build-Installer.ps1 -Version 1.0.0
+powershell -ExecutionPolicy Bypass -File scripts\Build-Installer.ps1 -Version 1.0.1
 ```
 
-O resultado fica em `artifacts\installer\Iniciador-Hytale-Setup-1.0.0.exe`. O workflow `.github/workflows/release.yml` repete esse processo em tags `v*` e anexa o executável à Release correspondente.
+O resultado fica em `artifacts\installer\Iniciador-Hytale-Setup-1.0.1.exe`. O workflow `.github/workflows/release.yml` repete esse processo em tags `v*` e anexa o executável à Release correspondente.
 
 ## Próximas etapas
 

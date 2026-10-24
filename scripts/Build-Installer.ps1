@@ -34,7 +34,7 @@ New-Item -ItemType Directory -Path $publishDirectory -Force | Out-Null
 New-Item -ItemType Directory -Path $installerDirectory -Force | Out-Null
 
 Write-Host "Publicando a versao $Version..." -ForegroundColor Cyan
-& $dotnet restore $projectPath
+& $dotnet restore $projectPath -r win-x64
 if ($LASTEXITCODE -ne 0) { throw 'Falha ao restaurar as dependencias.' }
 & $dotnet publish $projectPath -c Release -r win-x64 --self-contained true -o $publishDirectory --no-restore -p:Version=$Version
 if ($LASTEXITCODE -ne 0) { throw 'Falha ao publicar a aplicacao.' }

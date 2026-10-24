@@ -78,10 +78,10 @@ Os arquivos `.bat` foram mantidos somente em `scripts/bootstrap/` como ferrament
 Para compilar o instalador localmente, instale o SDK .NET 10 e o Inno Setup 6 e execute:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts\Build-Installer.ps1 -Version 1.0.0
+powershell -ExecutionPolicy Bypass -File scripts\Build-Installer.ps1 -Version 1.0.1
 ```
 
-O executável será criado em `artifacts\installer`. Tags no formato `v1.0.0` também acionam o workflow de release do GitHub, que compila e publica o instalador automaticamente.
+O executável será criado em `artifacts\installer`. Tags no formato `v1.0.1` também acionam o workflow de release do GitHub, que compila e publica o instalador automaticamente.
 
 Enquanto o projeto não possuir um certificado de assinatura de código, o Windows pode exibir o aviso de editor desconhecido. O arquivo deve ser obtido somente desta página oficial de Releases.
 
