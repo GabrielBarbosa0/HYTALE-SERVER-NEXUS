@@ -3,7 +3,7 @@
 ## 1. Identificação
 
 - **Documento:** Technical Design Document (Documento de Projeto Técnico)
-- **Projeto:** HTSERVER-NEXUS
+- **Projeto:** HYTALE-SERVER-NEXUS
 - **Plataforma:** Windows
 - **Mundos detectados:** qualquer save válido encontrado na pasta de saves
 - **Porta local:** UDP `5520`

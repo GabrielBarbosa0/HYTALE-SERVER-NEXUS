@@ -4,13 +4,13 @@ Aplicativo para Windows, desenvolvido em C# e WinUI 3, que centraliza a seleçã
 
 [![Interface do HTServer Nexus](images/htserver-nexus-interface-1920x1080.png)](images/htserver-nexus-interface-1920x1080.png)
 
-> [Baixar a versão mais recente](https://github.com/GabrielBarbosa0/HTSERVER-NEXUS/releases/latest) — instalador autocontido para Windows 64 bits.
+> [Baixar a versão mais recente](https://github.com/GabrielBarbosa0/HYTALE-SERVER-NEXUS/releases/latest) — instalador autocontido para Windows 64 bits.
 
 > Projeto comunitário não oficial, sem vínculo com a Hypixel Studios.
 
 ## Interface gráfica
 
-Baixe o arquivo `HTServer-Nexus-Setup-x.y.z.exe` na página de [Releases](https://github.com/GabrielBarbosa0/HTSERVER-NEXUS/releases), execute o instalador e abra **HTServer Nexus** pelo atalho da Área de Trabalho ou pelo menu Iniciar. O instalador inclui a aplicação e o runtime necessários; não é preciso instalar Visual Studio nem o SDK .NET.
+Baixe o arquivo `HTServer-Nexus-Setup-x.y.z.exe` na página de [Releases](https://github.com/GabrielBarbosa0/HYTALE-SERVER-NEXUS/releases), execute o instalador e abra **HTServer Nexus** pelo atalho da Área de Trabalho ou pelo menu Iniciar. O instalador inclui a aplicação e o runtime necessários; não é preciso instalar Visual Studio nem o SDK .NET.
 
 O MVP atual oferece:
 
@@ -39,7 +39,7 @@ O MVP atual oferece:
 ## Primeiro uso em outro computador
 
 1. Instale o Hytale pelo launcher oficial e tenha pelo menos um save com `config.json`.
-2. Baixe a versão mais recente em [Releases](https://github.com/GabrielBarbosa0/HTSERVER-NEXUS/releases) e execute `HTServer-Nexus-Setup-x.y.z.exe`.
+2. Baixe a versão mais recente em [Releases](https://github.com/GabrielBarbosa0/HYTALE-SERVER-NEXUS/releases) e execute `HTServer-Nexus-Setup-x.y.z.exe`.
 3. No painel, use **Baixar Playit** e depois **Vincular agente**. Entre na sua própria conta e crie um túnel UDP para `127.0.0.1:5520`.
 4. Copie o endereço público desse túnel para **Configuração > Endereço público** e salve.
 5. Selecione o mundo e inicie o servidor.
