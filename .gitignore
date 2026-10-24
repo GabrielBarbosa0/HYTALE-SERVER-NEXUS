@@ -1,0 +1,26 @@
+# Credenciais e autenticação
+auth.enc
+*.token
+*.secret
+playit.toml
+
+# Mundo, backups e arquivos grandes
+Saves/
+universe/
+backup/
+backups/
+*.zip
+*.jar
+*.exe
+
+# Logs e temporários
+*.log
+*.tmp
+*.bak
+.world.lock
+
+# Windows e IDEs
+Thumbs.db
+Desktop.ini
+.vscode/
+.idea/
