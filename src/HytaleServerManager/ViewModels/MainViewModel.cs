@@ -180,7 +180,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         OnPropertyChanged(nameof(Settings));
         LoadWorlds();
         _initialized = true;
-        AddLog("Interface iniciada. O .bat continua disponível como fallback.");
+        AddLog("Interface iniciada. Selecione um mundo para controlar o servidor.");
         await RefreshAsync();
     }
 
@@ -416,8 +416,6 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
 
         SelectedWorld = Worlds.FirstOrDefault(world =>
             string.Equals(world.Path, Settings.WorldPath, StringComparison.OrdinalIgnoreCase))
-            ?? Worlds.FirstOrDefault(world =>
-                string.Equals(world.Name, "CAVALEIROS CLT", StringComparison.OrdinalIgnoreCase))
             ?? Worlds.FirstOrDefault();
 
         OnPropertyChanged(nameof(WorldCountText));

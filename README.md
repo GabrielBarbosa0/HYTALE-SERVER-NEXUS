@@ -1,6 +1,6 @@
 # INICIADOR DO SERVIDOR HYTALE
 
-Aplicativo WinUI 3 em C# para escolher e controlar mundos do servidor dedicado do Hytale e o túnel do Playit.gg. O iniciador em lote original do **CAVALEIROS CLT** permanece disponível como fallback.
+Aplicativo WinUI 3 em C# para escolher e controlar mundos do servidor dedicado do Hytale e o túnel do Playit.gg.
 
 ## Interface gráfica
 
@@ -49,7 +49,7 @@ Contas, tokens, `auth.enc`, `auth.key`, `playit.toml`, mundos e endereços pesso
 
 ## Uso rápido
 
-1. Execute `INICIAR-PAINEL.bat` (recomendado) ou `INICIAR-CAVALEIROS-CLT.bat` (fallback exclusivo desse mundo).
+1. Execute `INICIAR-PAINEL.bat` ou use o atalho **Iniciador do Servidor Hytale**.
 2. Selecione o mundo e pressione **Iniciar tudo**.
 3. Aguarde a mensagem de que o universo está pronto.
 4. Entre localmente pelo Hytale.
@@ -57,12 +57,6 @@ Contas, tokens, `auth.enc`, `auth.key`, `playit.toml`, mundos e endereços pesso
 6. Para desligar com segurança, use **Salvar e parar servidor**.
 
 O firewall do Windows deve permanecer ativado. O iniciador reconhece quando o Playit.gg ou a porta UDP `5520` já estão em uso e evita iniciar uma segunda instância.
-
-Para validar caminhos e restaurar o Playit.gg sem iniciar o servidor, execute no terminal:
-
-```bat
-INICIAR-CAVALEIROS-CLT.bat --check
-```
 
 ## Pré-requisitos
 

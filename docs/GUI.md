@@ -28,7 +28,7 @@ O ícone multipropósito em `Assets/HytaleServerManager.ico` é incorporado ao e
 
 1. Carrega `%LOCALAPPDATA%\HytaleServerManager\settings.json` ou cria padrões em memória.
 2. Procura subpastas com `config.json` em `%APPDATA%\Hytale\UserData\Saves` e monta o seletor de mundos.
-3. Restaura o último mundo selecionado; se ele não existir, prefere `CAVALEIROS CLT` e depois o primeiro mundo válido.
+3. Restaura o último mundo selecionado; se ele não existir, escolhe o primeiro save válido encontrado.
 4. Descobre processos existentes do Java e Playit.gg.
 5. Atualiza status, porta e métricas a cada segundo.
 6. Ao iniciar, valida o mundo selecionado, Java, JAR, assets, Playit.gg e limites de memória.

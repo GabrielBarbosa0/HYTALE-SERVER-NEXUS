@@ -6,7 +6,7 @@ public sealed class AppSettings
     private static string LocalAppData => Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
 
     public string SavesRootPath { get; set; } = Path.Combine(AppData, "Hytale", "UserData", "Saves");
-    public string WorldPath { get; set; } = Path.Combine(AppData, "Hytale", "UserData", "Saves", "CAVALEIROS CLT");
+    public string WorldPath { get; set; } = string.Empty;
     public string JavaPath { get; set; } = Path.Combine(AppData, "Hytale", "install", "release", "package", "jre", "latest", "bin", "java.exe");
     public string ServerJarPath { get; set; } = Path.Combine(AppData, "Hytale", "install", "release", "package", "game", "latest", "Server", "HytaleServer.jar");
     public string AssetsPath { get; set; } = Path.Combine(AppData, "Hytale", "install", "release", "package", "game", "latest", "Assets.zip");

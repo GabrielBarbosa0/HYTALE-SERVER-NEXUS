@@ -5,7 +5,7 @@
 - **Documento:** Technical Design Document (Documento de Projeto Técnico)
 - **Projeto:** INICIADOR-SERVIDOR-HYTALE
 - **Plataforma:** Windows
-- **Mundos detectados:** qualquer save válido; CAVALEIROS CLT é o padrão legado
+- **Mundos detectados:** qualquer save válido encontrado na pasta de saves
 - **Porta local:** UDP `5520`
 - **Endereço público atual:** `cone-dq.tun.ply.gg:2172`
 - **Transporte do Hytale:** QUICHE/UDP
@@ -54,7 +54,8 @@ Componentes:
 | Componente | Responsabilidade |
 |---|---|
 | Interface WinUI 3 | Descobre mundos, guarda a seleção e controla os processos |
-| `INICIAR-CAVALEIROS-CLT.bat` | Orquestra validações e inicialização |
+| `INICIAR-PAINEL.bat` | Abre a aplicação instalada ou chama o instalador no primeiro uso |
+| `INSTALAR-E-INICIAR.bat` | Publica a aplicação localmente e cria o atalho |
 | Java incluído no Hytale | Executa o servidor dedicado |
 | `HytaleServer.jar` | Hospeda o mundo e autentica jogadores |
 | Playit.gg | Expõe a porta UDP local sem encaminhamento manual no roteador |
@@ -62,7 +63,7 @@ Componentes:
 
 ## 4. Caminhos e configuração
 
-O script usa variáveis do Windows para não depender do nome do usuário:
+O iniciador usa variáveis do Windows para não depender do nome do usuário:
 
 | Recurso | Caminho esperado |
 |---|---|
@@ -145,11 +146,11 @@ Confirmar que o agente em uso é o `1.0.12` no caminho documentado. Encerrar ins
 
 ### O mundo não aparece no seletor
 
-Confirmar que ele está diretamente dentro de `%APPDATA%\Hytale\UserData\Saves` e contém `config.json`. Reiniciar a interface para refazer a descoberta. O `.bat` legado continua fixo no CAVALEIROS CLT.
+Confirmar que ele está diretamente dentro de `%APPDATA%\Hytale\UserData\Saves` e contém `config.json`. Pressionar **Atualizar lista de mundos** para refazer a descoberta.
 
 ### Java, servidor ou `Assets.zip` não encontrado
 
-Abrir o launcher oficial para verificar ou reparar a instalação. Os caminhos usam a pasta `latest`; uma mudança futura na estrutura do Hytale pode exigir atualização do script.
+Abrir o launcher oficial para verificar ou reparar a instalação. Os caminhos usam a pasta `latest`; uma mudança futura na estrutura do Hytale pode exigir atualização do iniciador.
 
 ### Playit.gg não encontrado
 
@@ -159,7 +160,7 @@ Na interface gráfica, **Baixar Playit** abre a página oficial e **Vincular age
 
 ### Porta `5520` já em uso
 
-O comportamento normal do script é não iniciar outra instância. Verificar no Gerenciador de Tarefas se o servidor existente está saudável. Não encerrar Java indiscriminadamente se outros programas Java estiverem abertos.
+O comportamento normal do iniciador é não criar outra instância. A interface identifica o mundo e se o processo é controlado pelo painel ou externo. Não encerrar Java indiscriminadamente se outros programas Java estiverem abertos.
 
 ### Arquivo `.world.lock`
 
@@ -244,21 +245,20 @@ A fonte principal de diagnóstico é a janela do servidor. Os logs persistentes 
 
 ## 12. Limitações e melhorias futuras
 
-- O endereço público é configurado diretamente no `.bat`; mudanças no painel Playit.gg exigem edição manual.
+- O endereço público é configurado na interface; mudanças no painel Playit.gg ainda exigem atualização manual desse campo.
 - A verificação de porta detecta qualquer processo usando UDP `5520`, não apenas o Hytale.
-- O script não verifica automaticamente a versão do agente Playit.gg.
-- O encerramento do servidor e do agente ainda é manual.
-- Uma evolução possível é um script PowerShell com logs próprios, validação do processo dono da porta e configuração externa em JSON.
+- O iniciador não verifica automaticamente a versão do agente Playit.gg.
+- Uma evolução possível é consultar o estado local do agente Playit para descobrir automaticamente o endereço público.
 
 ## 12.1 Interface gráfica
 
-O projeto agora inclui uma central em C# com WinUI 3. Ela substitui o CMD na operação cotidiana, mantendo este `.bat` como fallback. A arquitetura, o fluxo de processos e o roadmap estão documentados em [`GUI.md`](GUI.md).
+O projeto usa uma central em C# com WinUI 3 como única interface de operação. Os dois arquivos `.bat` restantes apenas instalam ou abrem essa aplicação. A arquitetura, o fluxo de processos e o roadmap estão documentados em [`GUI.md`](GUI.md).
 
 ## 13. Controle de mudanças
 
 Qualquer mudança de porta, túnel, nome do mundo, estrutura da instalação ou transporte deve atualizar em conjunto:
 
-1. `INICIAR-CAVALEIROS-CLT.bat`;
+1. configuração e código da interface;
 2. `README.md`;
 3. este TDD;
 4. configuração do túnel no Playit.gg, quando aplicável.
