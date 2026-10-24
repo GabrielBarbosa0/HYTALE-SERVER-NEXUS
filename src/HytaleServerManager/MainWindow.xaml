@@ -5,7 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Title="Iniciador do Servidor Hytale">
+    Title="HTServer Nexus">
 
     <Grid x:Name="Root" Background="#E80B1018">
         <Grid.RowDefinitions>
@@ -23,7 +23,7 @@
                 <TextBlock Text="H" FontWeight="Bold" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" />
             </Border>
             <StackPanel Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center">
-                <TextBlock Text="INICIADOR HYTALE" FontSize="13" FontWeight="SemiBold" />
+                <TextBlock Text="HTSERVER NEXUS" FontSize="13" FontWeight="SemiBold" />
                 <TextBlock Text="CENTRAL DE SERVIDORES" FontSize="9" Foreground="{StaticResource SubtleTextBrush}" CharacterSpacing="140" />
             </StackPanel>
             <TextBlock Grid.Column="2" Text="{Binding Notice}" Foreground="{StaticResource SubtleTextBrush}" VerticalAlignment="Center" />

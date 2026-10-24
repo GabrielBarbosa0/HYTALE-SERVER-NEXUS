@@ -5,7 +5,7 @@ namespace HytaleServerManager;
 public partial class App : Application
 {
     private Window? _window;
-    private static readonly string CrashLogPath = Path.Combine(Path.GetTempPath(), "HytaleServerManager-crash.log");
+    private static readonly string CrashLogPath = Path.Combine(Path.GetTempPath(), "HTServerNexus-crash.log");
 
     public App()
     {

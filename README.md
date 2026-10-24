@@ -1,14 +1,16 @@
-# INICIADOR DO SERVIDOR HYTALE
+# HTServer Nexus
 
 Aplicativo para Windows, desenvolvido em C# e WinUI 3, que centraliza a seleção de mundos, a execução do servidor dedicado do Hytale e o túnel do Playit.gg em uma única interface.
 
-[![Interface do Iniciador do Servidor Hytale](images/iniciador-hytale-interface-1920x1080.png)](images/iniciador-hytale-interface-1920x1080.png)
+[![Interface do HTServer Nexus](images/htserver-nexus-interface-1920x1080.png)](images/htserver-nexus-interface-1920x1080.png)
 
-> [Baixar a versão mais recente](https://github.com/GabrielBarbosa0/INICIADOR-SERVIDOR-HYTALE/releases/latest) — instalador autocontido para Windows 64 bits.
+> [Baixar a versão mais recente](https://github.com/GabrielBarbosa0/HTSERVER-NEXUS/releases/latest) — instalador autocontido para Windows 64 bits.
+
+> Projeto comunitário não oficial, sem vínculo com a Hypixel Studios.
 
 ## Interface gráfica
 
-Baixe o arquivo `Iniciador-Hytale-Setup-x.y.z.exe` na página de [Releases](https://github.com/GabrielBarbosa0/INICIADOR-SERVIDOR-HYTALE/releases), execute o instalador e abra **Iniciador do Servidor Hytale** pelo atalho da Área de Trabalho ou pelo menu Iniciar. O instalador inclui a aplicação e o runtime necessários; não é preciso instalar Visual Studio nem o SDK .NET.
+Baixe o arquivo `HTServer-Nexus-Setup-x.y.z.exe` na página de [Releases](https://github.com/GabrielBarbosa0/HTSERVER-NEXUS/releases), execute o instalador e abra **HTServer Nexus** pelo atalho da Área de Trabalho ou pelo menu Iniciar. O instalador inclui a aplicação e o runtime necessários; não é preciso instalar Visual Studio nem o SDK .NET.
 
 O MVP atual oferece:
 
@@ -37,7 +39,7 @@ O MVP atual oferece:
 ## Primeiro uso em outro computador
 
 1. Instale o Hytale pelo launcher oficial e tenha pelo menos um save com `config.json`.
-2. Baixe a versão mais recente em [Releases](https://github.com/GabrielBarbosa0/INICIADOR-SERVIDOR-HYTALE/releases) e execute `Iniciador-Hytale-Setup-x.y.z.exe`.
+2. Baixe a versão mais recente em [Releases](https://github.com/GabrielBarbosa0/HTSERVER-NEXUS/releases) e execute `HTServer-Nexus-Setup-x.y.z.exe`.
 3. No painel, use **Baixar Playit** e depois **Vincular agente**. Entre na sua própria conta e crie um túnel UDP para `127.0.0.1:5520`.
 4. Copie o endereço público desse túnel para **Configuração > Endereço público** e salve.
 5. Selecione o mundo e inicie o servidor.
@@ -53,7 +55,7 @@ Contas, tokens, `auth.enc`, `auth.key`, `playit.toml`, mundos e endereços pesso
 
 ## Uso rápido
 
-1. Use o atalho **Iniciador do Servidor Hytale** na Área de Trabalho ou no menu Iniciar.
+1. Use o atalho **HTServer Nexus** na Área de Trabalho ou no menu Iniciar.
 2. Selecione o mundo e pressione **Iniciar tudo**.
 3. Aguarde a mensagem de que o universo está pronto.
 4. Entre localmente pelo Hytale.
@@ -82,10 +84,10 @@ Os arquivos `.bat` foram mantidos somente em `scripts/bootstrap/` como ferrament
 Para compilar o instalador localmente, instale o SDK .NET 10 e o Inno Setup 6 e execute:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts\Build-Installer.ps1 -Version 1.0.1
+powershell -ExecutionPolicy Bypass -File scripts\Build-Installer.ps1 -Version 1.1.0
 ```
 
-O executável será criado em `artifacts\installer`. Tags no formato `v1.0.1` também acionam o workflow de release do GitHub, que compila e publica o instalador automaticamente.
+O executável será criado em `artifacts\installer`. Tags no formato `v1.1.0` também acionam o workflow de release do GitHub, que compila e publica o instalador automaticamente.
 
 Enquanto o projeto não possuir um certificado de assinatura de código, o Windows pode exibir o aviso de editor desconhecido. O arquivo deve ser obtido somente desta página oficial de Releases.
 

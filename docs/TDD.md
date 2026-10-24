@@ -1,9 +1,9 @@
-# TDD — Iniciador do servidor Hytale
+# TDD — HTServer Nexus
 
 ## 1. Identificação
 
 - **Documento:** Technical Design Document (Documento de Projeto Técnico)
-- **Projeto:** INICIADOR-SERVIDOR-HYTALE
+- **Projeto:** HTSERVER-NEXUS
 - **Plataforma:** Windows
 - **Mundos detectados:** qualquer save válido encontrado na pasta de saves
 - **Porta local:** UDP `5520`
@@ -54,7 +54,7 @@ Componentes:
 | Componente | Responsabilidade |
 |---|---|
 | Interface WinUI 3 | Descobre mundos, guarda a seleção e controla os processos |
-| `Iniciador-Hytale-Setup-x.y.z.exe` | Instala a aplicação, atalhos e desinstalador para o usuário atual |
+| `HTServer-Nexus-Setup-x.y.z.exe` | Instala a aplicação, atalhos e desinstalador para o usuário atual |
 | `scripts/bootstrap/INICIAR-PAINEL.bat` | Ferramenta auxiliar para abrir ou recompilar a aplicação em desenvolvimento |
 | `scripts/bootstrap/INSTALAR-E-INICIAR.bat` | Ferramenta auxiliar que chama `scripts/Install.ps1` em desenvolvimento |
 | Java incluído no Hytale | Executa o servidor dedicado |
@@ -183,7 +183,7 @@ Se o túnel for recriado, o domínio ou a porta pública podem mudar. Atualizar 
 
 ### Iniciar
 
-1. Abrir **Iniciador do Servidor Hytale** pelo atalho.
+1. Abrir **HTServer Nexus** pelo atalho.
 2. Selecionar o mundo e pressionar **Iniciar tudo**.
 3. Aguardar o carregamento completo no console visual.
 4. Compartilhar apenas o endereço público, nunca arquivos de autenticação.

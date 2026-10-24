@@ -1,4 +1,4 @@
-# Interface gráfica — arquitetura e operação
+# HTServer Nexus — arquitetura e operação
 
 ## Stack
 
@@ -63,7 +63,7 @@ Os comandos frequentes `/auth status`, `/auth persistence` e `/auth persistence 
 
 ## Instalação
 
-O fluxo de distribuição principal usa `Iniciador-Hytale-Setup-x.y.z.exe`, gerado com Inno Setup. O instalador:
+O fluxo de distribuição principal usa `HTServer-Nexus-Setup-x.y.z.exe`, gerado com Inno Setup. O instalador:
 
 1. instala a aplicação autocontida em `%LOCALAPPDATA%\HytaleServerManager\app` sem exigir privilégio de administrador;
 2. cria entradas no menu Iniciar e, opcionalmente, na Área de Trabalho;
@@ -116,10 +116,10 @@ dotnet publish src/HytaleServerManager/HytaleServerManager.csproj `
 Para gerar o instalador completo, com Inno Setup 6 instalado:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts\Build-Installer.ps1 -Version 1.0.1
+powershell -ExecutionPolicy Bypass -File scripts\Build-Installer.ps1 -Version 1.1.0
 ```
 
-O resultado fica em `artifacts\installer\Iniciador-Hytale-Setup-1.0.1.exe`. O workflow `.github/workflows/release.yml` repete esse processo em tags `v*` e anexa o executável à Release correspondente.
+O resultado fica em `artifacts\installer\HTServer-Nexus-Setup-1.1.0.exe`. O workflow `.github/workflows/release.yml` repete esse processo em tags `v*` e anexa o executável à Release correspondente.
 
 ## Próximas etapas
 

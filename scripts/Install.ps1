@@ -3,9 +3,10 @@ $ErrorActionPreference = 'Stop'
 $repositoryRoot = Split-Path -Parent $PSScriptRoot
 $projectPath = Join-Path $repositoryRoot 'src\HytaleServerManager\HytaleServerManager.csproj'
 $installDirectory = Join-Path $env:LOCALAPPDATA 'HytaleServerManager\app'
-$applicationPath = Join-Path $installDirectory 'HytaleServerManager.exe'
+$applicationPath = Join-Path $installDirectory 'HTServerNexus.exe'
 $desktopDirectory = [Environment]::GetFolderPath('Desktop')
-$shortcutPath = Join-Path $desktopDirectory 'Iniciador do Servidor Hytale.lnk'
+$shortcutPath = Join-Path $desktopDirectory 'HTServer Nexus.lnk'
+$legacyShortcutPath = Join-Path $desktopDirectory 'Iniciador do Servidor Hytale.lnk'
 
 function Find-DotNet {
     $userDotNet = Join-Path $env:LOCALAPPDATA 'Microsoft\dotnet\dotnet.exe'
@@ -38,7 +39,7 @@ if (-not $hasSdk10) {
 if (-not $dotnet) { throw 'O executavel dotnet nao foi localizado apos a instalacao.' }
 
 Write-Host 'Compilando e publicando o iniciador...' -ForegroundColor Cyan
-& $dotnet restore $projectPath
+& $dotnet restore $projectPath -r win-x64
 if ($LASTEXITCODE -ne 0) { throw 'Falha ao restaurar as dependências do projeto.' }
 & $dotnet publish $projectPath -c Release -r win-x64 --self-contained true -o $installDirectory --no-restore
 if ($LASTEXITCODE -ne 0) { throw 'Falha ao publicar o aplicativo.' }
@@ -48,9 +49,12 @@ $shell = New-Object -ComObject WScript.Shell
 $shortcut = $shell.CreateShortcut($shortcutPath)
 $shortcut.TargetPath = $applicationPath
 $shortcut.WorkingDirectory = $installDirectory
-$shortcut.Description = 'Iniciador gráfico dos servidores Hytale'
+$shortcut.Description = 'Central de gerenciamento de servidores Hytale'
 $shortcut.IconLocation = "$applicationPath,0"
 $shortcut.Save()
+if (Test-Path -LiteralPath $legacyShortcutPath) {
+    Remove-Item -LiteralPath $legacyShortcutPath -Force
+}
 
-Write-Host 'Instalacao concluida. Abrindo o iniciador...' -ForegroundColor Green
+Write-Host 'Instalacao concluida. Abrindo o HTServer Nexus...' -ForegroundColor Green
 Start-Process -FilePath $applicationPath

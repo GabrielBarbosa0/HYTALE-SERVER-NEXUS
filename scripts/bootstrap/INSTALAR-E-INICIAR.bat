@@ -1,6 +1,6 @@
 @echo off
 setlocal
-title Bootstrap do Iniciador do Servidor Hytale
+title Bootstrap do HTServer Nexus
 
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0..\Install.ps1"
 if errorlevel 1 (

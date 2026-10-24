@@ -1,10 +1,10 @@
 #ifndef MyAppVersion
-  #define MyAppVersion "1.0.1"
+  #define MyAppVersion "1.1.0"
 #endif
 
-#define MyAppName "Iniciador do Servidor Hytale"
+#define MyAppName "HTServer Nexus"
 #define MyAppPublisher "Gabriel Barbosa"
-#define MyAppExeName "HytaleServerManager.exe"
+#define MyAppExeName "HTServerNexus.exe"
 
 [Setup]
 AppId={{D23D2E29-8FA2-47F9-9BC5-64368EEC1C1E}
@@ -12,15 +12,15 @@ AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 AppVerName={#MyAppName} {#MyAppVersion}
 AppPublisher={#MyAppPublisher}
-AppPublisherURL=https://github.com/GabrielBarbosa0/INICIADOR-SERVIDOR-HYTALE
-AppSupportURL=https://github.com/GabrielBarbosa0/INICIADOR-SERVIDOR-HYTALE/issues
-AppUpdatesURL=https://github.com/GabrielBarbosa0/INICIADOR-SERVIDOR-HYTALE/releases
+AppPublisherURL=https://github.com/GabrielBarbosa0/HTSERVER-NEXUS
+AppSupportURL=https://github.com/GabrielBarbosa0/HTSERVER-NEXUS/issues
+AppUpdatesURL=https://github.com/GabrielBarbosa0/HTSERVER-NEXUS/releases
 DefaultDirName={localappdata}\HytaleServerManager\app
-DefaultGroupName=Iniciador do Servidor Hytale
+DefaultGroupName=HTServer Nexus
 DisableProgramGroupPage=yes
 PrivilegesRequired=lowest
 OutputDir=..\artifacts\installer
-OutputBaseFilename=Iniciador-Hytale-Setup-{#MyAppVersion}
+OutputBaseFilename=HTServer-Nexus-Setup-{#MyAppVersion}
 SetupIconFile=..\src\HytaleServerManager\Assets\HytaleServerManager.ico
 UninstallDisplayIcon={app}\{#MyAppExeName}
 Compression=lzma2/ultra64
@@ -29,7 +29,7 @@ WizardStyle=modern
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 CloseApplications=force
-CloseApplicationsFilter={#MyAppExeName}
+CloseApplicationsFilter={#MyAppExeName},HytaleServerManager.exe
 RestartApplications=no
 VersionInfoVersion={#MyAppVersion}
 VersionInfoCompany={#MyAppPublisher}
@@ -46,9 +46,14 @@ Name: "desktopicon"; Description: "Criar atalho na Área de Trabalho"; GroupDesc
 [Files]
 Source: "..\artifacts\publish\win-x64\*"; DestDir: "{app}"; Excludes: "*.pdb"; Flags: ignoreversion recursesubdirs createallsubdirs
 
+[InstallDelete]
+Type: files; Name: "{app}\HytaleServerManager.*"
+Type: files; Name: "{autoprograms}\Iniciador do Servidor Hytale.lnk"
+Type: files; Name: "{autodesktop}\Iniciador do Servidor Hytale.lnk"
+
 [Icons]
-Name: "{autoprograms}\Iniciador do Servidor Hytale"; Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{app}"
-Name: "{autodesktop}\Iniciador do Servidor Hytale"; Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{app}"; Tasks: desktopicon
+Name: "{autoprograms}\HTServer Nexus"; Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{app}"
+Name: "{autodesktop}\HTServer Nexus"; Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{app}"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\{#MyAppExeName}"; Description: "Abrir o Iniciador do Servidor Hytale"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\{#MyAppExeName}"; Description: "Abrir o HTServer Nexus"; Flags: nowait postinstall skipifsilent

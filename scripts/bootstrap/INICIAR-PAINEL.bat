@@ -1,9 +1,9 @@
 @echo off
 setlocal
-set "APP=%LOCALAPPDATA%\HytaleServerManager\app\HytaleServerManager.exe"
+set "APP=%LOCALAPPDATA%\HytaleServerManager\app\HTServerNexus.exe"
 
 if exist "%APP%" (
-    start "Iniciador do Servidor Hytale" "%APP%"
+    start "HTServer Nexus" "%APP%"
     exit /b 0
 )
 

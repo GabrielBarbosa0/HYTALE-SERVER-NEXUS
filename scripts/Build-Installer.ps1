@@ -1,5 +1,5 @@
 param(
-    [string]$Version = '1.0.0'
+    [string]$Version = '1.1.0'
 )
 
 $ErrorActionPreference = 'Stop'
@@ -30,6 +30,14 @@ function Find-InnoCompiler {
 
 $dotnet = Find-DotNet
 $iscc = Find-InnoCompiler
+$artifactsRoot = [IO.Path]::GetFullPath((Join-Path $repositoryRoot 'artifacts'))
+$publishDirectory = [IO.Path]::GetFullPath($publishDirectory)
+if (-not $publishDirectory.StartsWith($artifactsRoot + [IO.Path]::DirectorySeparatorChar, [StringComparison]::OrdinalIgnoreCase)) {
+    throw 'O diretório de publicação precisa permanecer dentro de artifacts.'
+}
+if (Test-Path -LiteralPath $publishDirectory) {
+    Get-ChildItem -LiteralPath $publishDirectory -Force | Remove-Item -Recurse -Force
+}
 New-Item -ItemType Directory -Path $publishDirectory -Force | Out-Null
 New-Item -ItemType Directory -Path $installerDirectory -Force | Out-Null
 
@@ -43,6 +51,6 @@ Write-Host 'Gerando o instalador executavel...' -ForegroundColor Cyan
 & $iscc "/DMyAppVersion=$Version" $installerScript
 if ($LASTEXITCODE -ne 0) { throw 'Falha ao gerar o instalador.' }
 
-$installer = Get-ChildItem -LiteralPath $installerDirectory -Filter "Iniciador-Hytale-Setup-$Version.exe" | Select-Object -First 1
+$installer = Get-ChildItem -LiteralPath $installerDirectory -Filter "HTServer-Nexus-Setup-$Version.exe" | Select-Object -First 1
 if (-not $installer) { throw 'O instalador esperado nao foi criado.' }
 Write-Host "Instalador pronto: $($installer.FullName)" -ForegroundColor Green

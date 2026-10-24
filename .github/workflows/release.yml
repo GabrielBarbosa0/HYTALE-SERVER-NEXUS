@@ -6,7 +6,7 @@ on:
       version:
         description: Versão do instalador
         required: true
-        default: 1.0.1
+        default: 1.1.0
   push:
     tags:
       - 'v*'
@@ -46,7 +46,7 @@ jobs:
       - name: Publicar artefato
         uses: actions/upload-artifact@v4
         with:
-          name: Iniciador-Hytale-Setup-${{ env.APP_VERSION }}
+          name: HTServer-Nexus-Setup-${{ env.APP_VERSION }}
           path: artifacts/installer/*.exe
 
       - name: Criar GitHub Release
@@ -54,4 +54,4 @@ jobs:
         shell: powershell
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "${{ github.ref_name }}" artifacts/installer/*.exe --generate-notes --title "Iniciador Hytale ${{ github.ref_name }}"
+        run: gh release create "${{ github.ref_name }}" artifacts/installer/*.exe --generate-notes --title "HTServer Nexus ${{ github.ref_name }}"
