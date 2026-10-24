@@ -10,6 +10,7 @@ O MVP atual oferece:
 
 - status do servidor, túnel e porta UDP;
 - início conjunto do Hytale e Playit.gg;
+- controle independente para ligar ou desligar somente o túnel, inclusive com o servidor já ativo;
 - descoberta automática e seleção dos mundos válidos na pasta de saves;
 - título dinâmico com o nome do mundo selecionado;
 - encerramento seguro do servidor pelo comando `/stop`;

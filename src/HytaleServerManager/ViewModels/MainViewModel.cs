@@ -56,6 +56,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
 
         StartCommand = new AsyncRelayCommand(StartAsync);
         StopCommand = new AsyncRelayCommand(StopAsync);
+        StartTunnelCommand = new RelayCommand(StartTunnel);
         StopTunnelCommand = new RelayCommand(StopTunnel);
         CopyAddressCommand = new RelayCommand(CopyAddress);
         SaveSettingsCommand = new AsyncRelayCommand(SaveSettingsAsync);
@@ -81,6 +82,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
 
     public ICommand StartCommand { get; }
     public ICommand StopCommand { get; }
+    public ICommand StartTunnelCommand { get; }
     public ICommand StopTunnelCommand { get; }
     public ICommand CopyAddressCommand { get; }
     public ICommand SaveSettingsCommand { get; }
@@ -142,6 +144,8 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     public bool CanSelectWorld => !ServerRunning;
     public bool CanUseConsole => _processService.CanSendServerCommands;
     public bool CanStartServer => !ServerRunning;
+    public bool CanStartTunnel => !TunnelRunning && IsPlayitInstalled;
+    public bool CanStopTunnel => TunnelRunning;
     public string ConsoleAvailabilityText => CanUseConsole
         ? "Console conectado ao servidor atual."
         : ServerRunning
@@ -202,6 +206,8 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         OnPropertyChanged(nameof(CanSelectWorld));
         OnPropertyChanged(nameof(CanUseConsole));
         OnPropertyChanged(nameof(CanStartServer));
+        OnPropertyChanged(nameof(CanStartTunnel));
+        OnPropertyChanged(nameof(CanStopTunnel));
         OnPropertyChanged(nameof(ConsoleAvailabilityText));
         RefreshSetupStatus();
         return Task.CompletedTask;
@@ -261,6 +267,13 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     private void StopTunnel()
     {
         ExecuteSafely(_processService.StopTunnel);
+        _ = RefreshAsync();
+    }
+
+    private void StartTunnel()
+    {
+        ExecuteSafely(() => _processService.StartTunnel(Settings));
+        Notice = "Inicialização do túnel solicitada";
         _ = RefreshAsync();
     }
 

@@ -253,7 +253,10 @@
                                     <TextBlock Text="Salvar e parar servidor" />
                                 </StackPanel>
                             </Button>
-                            <Button Command="{Binding StopTunnelCommand}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Padding="12">
+                            <Button Command="{Binding StartTunnelCommand}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Padding="12" IsEnabled="{Binding CanStartTunnel}">
+                                <TextBlock Text="Ligar somente o túnel" />
+                            </Button>
+                            <Button Command="{Binding StopTunnelCommand}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Padding="12" IsEnabled="{Binding CanStopTunnel}">
                                 <TextBlock Text="Desligar somente o túnel" />
                             </Button>
                         </StackPanel>

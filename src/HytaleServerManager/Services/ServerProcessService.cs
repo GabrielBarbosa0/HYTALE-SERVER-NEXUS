@@ -30,7 +30,7 @@ public sealed class ServerProcessService : IDisposable
     {
         Validate(settings);
         _forceTunnelVisible = false;
-        StartTunnel(settings, minimized: true);
+        StartTunnelCore(settings, minimized: true);
 
         if (FindServerProcess(settings) is not null)
         {
@@ -136,7 +136,15 @@ public sealed class ServerProcessService : IDisposable
         }
 
         _forceTunnelVisible = true;
-        StartTunnel(settings, minimized: false);
+        StartTunnelCore(settings, minimized: false);
+    }
+
+    public void StartTunnel(AppSettings settings)
+    {
+        if (!File.Exists(settings.PlayitPath))
+            throw new FileNotFoundException("Instale o agente oficial do Playit.gg antes de iniciar o túnel.", settings.PlayitPath);
+        _forceTunnelVisible = false;
+        StartTunnelCore(settings, minimized: true);
     }
 
     public void ApplyTunnelWindowPreference(AppSettings settings)
@@ -224,7 +232,7 @@ public sealed class ServerProcessService : IDisposable
         Process.Start(new ProcessStartInfo("explorer.exe", $"\"{path}\"") { UseShellExecute = true });
     }
 
-    private void StartTunnel(AppSettings settings, bool minimized)
+    private void StartTunnelCore(AppSettings settings, bool minimized)
     {
         _playitProcess = FindPlayitProcess();
         if (_playitProcess is { HasExited: false })

@@ -53,6 +53,8 @@ O Playit.gg continua com sua própria autenticação. A interface abre apenas p�
 
 Na operação normal, o agente é criado com `CreateNoWindow` e sua saída é drenada em segundo plano, evitando console e segundo ícone na barra de tarefas. Uma instância antiga com janela também é ocultada. O fluxo **Vincular agente** reinicia em modo visível quando necessário, e a configuração **Mostrar console do Playit.gg no próximo início** permite diagnóstico manual.
 
+Os controles do túnel são independentes do servidor: **Ligar somente o túnel** permanece disponível quando o Hytale já está online, enquanto **Desligar somente o túnel** fica disponível apenas com o agente ativo.
+
 O console visual aceita comandos somente quando o processo foi iniciado pela própria interface. Isso evita fingir que um comando foi entregue a uma instância Java externa que não possui entrada padrão anexada.
 
 Os comandos frequentes `/auth status`, `/auth persistence` e `/auth persistence Encrypted` possuem botões próprios. Quando um servidor externo é detectado, a interface desabilita os comandos, o início e a troca de mundo, exibe o mundo identificado pelo `.world.lock` e orienta o operador a encerrar a instância no console original.
