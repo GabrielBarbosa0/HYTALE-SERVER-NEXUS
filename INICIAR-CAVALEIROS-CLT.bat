@@ -11,6 +11,9 @@ set "MODS=%APPDATA%\Hytale\UserData\Mods"
 set "PREFABS=%APPDATA%\Hytale\UserData\PrefabCache"
 set "EARLY_PLUGINS=%APPDATA%\Hytale\UserData\EarlyPlugins"
 set "PLAYIT=%LOCALAPPDATA%\PlayitGG\playit-windows-x86_64-signed.exe"
+set "PLAYIT_BACKUP=%~dp0tools\playit-windows-x86_64-signed.exe"
+if defined HYTALE_PLAYIT_PATH set "PLAYIT=%HYTALE_PLAYIT_PATH%"
+if defined HYTALE_PLAYIT_BACKUP_PATH set "PLAYIT_BACKUP=%HYTALE_PLAYIT_BACKUP_PATH%"
 set "SERVER_PORT=5520"
 set "PUBLIC_ADDRESS=cone-dq.tun.ply.gg:2172"
 
@@ -18,7 +21,16 @@ if not exist "%WORLD%\config.json" goto :missing_world
 if not exist "%JAVA%" goto :missing_java
 if not exist "%SERVER%" goto :missing_server
 if not exist "%ASSETS%" goto :missing_assets
+
+if not exist "%PLAYIT%" if exist "%PLAYIT_BACKUP%" (
+    echo Restaurando o programa Playit.gg...
+    if not exist "%LOCALAPPDATA%\PlayitGG" mkdir "%LOCALAPPDATA%\PlayitGG"
+    copy /Y "%PLAYIT_BACKUP%" "%PLAYIT%" >NUL
+)
+
 if not exist "%PLAYIT%" goto :missing_playit
+
+if /I "%~1"=="--check" goto :check_ok
 
 powershell.exe -NoProfile -Command "if (Get-Process -Name 'playit-windows-x86_64-signed' -ErrorAction SilentlyContinue) { exit 0 } else { exit 1 }"
 if errorlevel 1 (
@@ -47,6 +59,12 @@ echo O servidor foi encerrado.
 pause
 exit /b
 
+:check_ok
+echo OK: mundo, Hytale e Playit.gg foram encontrados.
+echo Porta local: UDP %SERVER_PORT%
+echo Endereco publico: %PUBLIC_ADDRESS%
+exit /b 0
+
 :already_running
 echo.
 echo O servidor Hytale ja esta ligado na porta %SERVER_PORT%.
@@ -73,6 +91,9 @@ goto :error_end
 :missing_playit
 echo ERRO: O programa Playit.gg nao foi encontrado em:
 echo %PLAYIT%
+echo.
+echo A copia de recuperacao tambem nao foi encontrada em:
+echo %PLAYIT_BACKUP%
 goto :error_end
 :error_end
 echo Consulte docs\TDD.md para instalacao e diagnostico.

@@ -71,19 +71,21 @@ O script usa variáveis do Windows para não depender do nome do usuário:
 | Assets | `%APPDATA%\Hytale\install\release\package\game\latest\Assets.zip` |
 | Mods globais | `%APPDATA%\Hytale\UserData\Mods` |
 | Playit.gg | `%LOCALAPPDATA%\PlayitGG\playit-windows-x86_64-signed.exe` |
+| Cópia local de recuperação | `tools\playit-windows-x86_64-signed.exe` |
 
 O diretório de trabalho do Java é a pasta do mundo. Isso é essencial: `config.json`, `auth.enc`, `universe`, `mods`, backups e `.world.lock` são resolvidos a partir desse local.
 
 ## 5. Sequência de inicialização
 
-1. O script verifica `config.json`, Java, servidor, assets e agente Playit.gg.
-2. Procura um processo chamado `playit-windows-x86_64-signed`.
-3. Se não existir, abre o agente Playit.gg minimizado.
-4. Consulta os endpoints UDP do Windows para saber se a porta `5520` já está em uso.
-5. Se estiver em uso, informa que o servidor já está ligado e não cria outra instância.
-6. Se estiver livre, muda o diretório para a pasta do mundo.
-7. Executa o servidor com bind em `0.0.0.0:5520` e transporte `QUICHE`.
-8. O servidor carrega o universo e o mundo interno `default` pertencente ao save CAVALEIROS CLT.
+1. O script verifica `config.json`, Java, servidor e assets.
+2. Se o agente estiver ausente em `%LOCALAPPDATA%`, tenta restaurá-lo usando a cópia local em `tools`.
+3. Procura um processo chamado `playit-windows-x86_64-signed`.
+4. Se não existir, abre o agente Playit.gg minimizado.
+5. Consulta os endpoints UDP do Windows para saber se a porta `5520` já está em uso.
+6. Se estiver em uso, informa que o servidor já está ligado e não cria outra instância.
+7. Se estiver livre, muda o diretório para a pasta do mundo.
+8. Executa o servidor com bind em `0.0.0.0:5520` e transporte `QUICHE`.
+9. O servidor carrega o universo e o mundo interno `default` pertencente ao save CAVALEIROS CLT.
 
 Parâmetros relevantes:
 
@@ -146,7 +148,7 @@ Abrir o launcher oficial para verificar ou reparar a instalação. Os caminhos u
 
 ### Playit.gg não encontrado
 
-Colocar a versão validada em `%LOCALAPPDATA%\PlayitGG\playit-windows-x86_64-signed.exe`. Não incluir o executável no Git.
+O iniciador primeiro procura `%LOCALAPPDATA%\PlayitGG\playit-windows-x86_64-signed.exe`. Se estiver ausente, ele tenta restaurar a partir de `tools\playit-windows-x86_64-signed.exe`. Se ambas as cópias estiverem ausentes, reinstalar a versão validada. O executável local é ignorado pelo Git e não deve ser publicado sem revisar licença, procedência e política de distribuição.
 
 ### Porta `5520` já em uso
 
@@ -202,6 +204,10 @@ Evitar finalizar o Java à força, desligar o computador durante salvamento ou a
 | T09 | Encerramento com `Ctrl+C` | Servidor salva e encerra sem corrupção aparente |
 
 O teste externo validado teve entrada bem-sucedida do jogador remoto `GleamingFjord808` e entrada local de `Saga`, com o firewall reativado.
+
+O modo `--check` executa as validações de caminhos e a recuperação local do agente sem iniciar Playit.gg ou Hytale. Ele deve ser usado em testes automatizados e diagnósticos que não podem abrir o servidor.
+
+Em testes isolados, `HYTALE_PLAYIT_PATH` e `HYTALE_PLAYIT_BACKUP_PATH` podem substituir os dois caminhos do agente. Essas variáveis não são necessárias no uso normal.
 
 ## 11. Observabilidade
 
