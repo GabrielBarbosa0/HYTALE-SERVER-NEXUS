@@ -52,6 +52,7 @@
                                 </Grid>
                                 <TextBlock Text="{Binding ServerStatus}" FontSize="24" FontWeight="SemiBold" />
                                 <TextBlock Text="{Binding ActiveWorldText}" Foreground="{StaticResource SubtleTextBrush}" />
+                                <TextBlock Text="{Binding ServerControlStatus}" Foreground="{StaticResource SubtleTextBrush}" FontSize="11" />
                                 <TextBlock Text="{Binding PortStatus}" Foreground="{StaticResource SubtleTextBrush}" />
                             </StackPanel>
                         </Border>
@@ -251,6 +252,12 @@
                                 <StackPanel Orientation="Horizontal" Spacing="8">
                                     <FontIcon Glyph="&#xE71A;" FontSize="14" />
                                     <TextBlock Text="Salvar e parar servidor" />
+                                </StackPanel>
+                            </Button>
+                            <Button Click="ForceStopServer_Click" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Padding="12" IsEnabled="{Binding CanForceStopServer}" BorderBrush="{StaticResource DangerBrush}">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <FontIcon Glyph="&#xE74D;" FontSize="14" />
+                                    <TextBlock Text="Encerrar processo externo" />
                                 </StackPanel>
                             </Button>
                             <Button Command="{Binding StartTunnelCommand}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Padding="12" IsEnabled="{Binding CanStartTunnel}">

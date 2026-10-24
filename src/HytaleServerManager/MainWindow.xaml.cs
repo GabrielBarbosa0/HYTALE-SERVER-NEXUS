@@ -62,4 +62,20 @@ public sealed partial class MainWindow : Window
             };
         }
     }
+
+    private async void ForceStopServer_Click(object sender, RoutedEventArgs e)
+    {
+        var dialog = new ContentDialog
+        {
+            XamlRoot = Root.XamlRoot,
+            Title = "Encerrar servidor externo?",
+            Content = "Esta instância não está conectada ao console do servidor, então não é possível enviar /stop. O encerramento forçado pode perder alterações desde o último salvamento. Use somente se o console original não estiver disponível.",
+            PrimaryButtonText = "Encerrar mesmo assim",
+            CloseButtonText = "Cancelar",
+            DefaultButton = ContentDialogButton.Close
+        };
+
+        if (await dialog.ShowAsync() == ContentDialogResult.Primary)
+            await ViewModel.ForceStopServerAsync();
+    }
 }

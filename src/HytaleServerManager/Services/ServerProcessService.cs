@@ -107,6 +107,23 @@ public sealed class ServerProcessService : IDisposable
         }
     }
 
+    public async Task ForceStopServerAsync(AppSettings settings)
+    {
+        var process = FindServerProcess(settings);
+        if (process is null || process.HasExited)
+        {
+            WriteLog("O servidor já está desligado.");
+            return;
+        }
+
+        WriteLog("AVISO: encerrando à força o processo externo do servidor...");
+        process.Kill(entireProcessTree: true);
+        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(15));
+        await process.WaitForExitAsync(timeout.Token);
+        if (ReferenceEquals(process, _serverProcess)) _serverProcess = null;
+        WriteLog("Processo externo do servidor encerrado. Verifique a integridade do último salvamento.");
+    }
+
     public async Task SendServerCommandAsync(string command)
     {
         if (string.IsNullOrWhiteSpace(command)) return;

@@ -57,6 +57,8 @@ Os controles do túnel são independentes do servidor: **Ligar somente o túnel*
 
 O console visual aceita comandos somente quando o processo foi iniciado pela própria interface. Isso evita fingir que um comando foi entregue a uma instância Java externa que não possui entrada padrão anexada.
 
+O cartão do servidor diferencia **Controlado por este painel** de **Detectado externamente**. No primeiro caso, a parada usa `/stop` e aguarda o salvamento. No segundo, a interface oferece **Encerrar processo externo** com diálogo de confirmação; essa ação finaliza a árvore do Java e é explicitamente tratada como recuperação de emergência, pois não garante um salvamento final.
+
 Os comandos frequentes `/auth status`, `/auth persistence` e `/auth persistence Encrypted` possuem botões próprios. Quando um servidor externo é detectado, a interface desabilita os comandos, o início e a troca de mundo, exibe o mundo identificado pelo `.world.lock` e orienta o operador a encerrar a instância no console original.
 
 ## Instalação a partir do repositório

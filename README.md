@@ -24,6 +24,8 @@ O MVP atual oferece:
 - entrada de comandos no console visual;
 - ações rápidas para consultar status e persistência da autenticação;
 - indicação explícita do mundo em execução e do motivo de o seletor estar bloqueado;
+- indicação se o processo está controlado pelo painel ou foi detectado externamente;
+- encerramento de emergência de servidor externo, protegido por confirmação e aviso de salvamento;
 - links oficiais para baixar e configurar o Playit.gg;
 - execução normal do Playit.gg em segundo plano, sem uma segunda janela na barra de tarefas;
 - ícone próprio do aplicativo no executável, na janela e no atalho.
@@ -38,6 +40,8 @@ O MVP atual oferece:
 6. Se a autorização Hytale estiver pendente, pressione **Gerar código**, abra a confirmação e autorize com a sua própria conta Hytale.
 
 O mundo só pode ser trocado com o servidor desligado. Se um servidor foi iniciado por outra janela ou pelo `.bat`, o painel consegue monitorá-lo, mas não consegue assumir sua entrada de console; encerre-o no console original antes de selecionar outro mundo.
+
+Quando o console original não estiver disponível, **Encerrar processo externo** substitui o Gerenciador de Tarefas. Essa é uma opção de emergência: diferentemente de **Salvar e parar servidor**, ela não consegue enviar `/stop` e pode perder alterações posteriores ao último salvamento.
 
 O console do Playit.gg fica oculto por padrão. Para vincular um agente, o iniciador o mostra temporariamente; para diagnóstico contínuo, ative **Mostrar console do Playit.gg no próximo início** nas configurações.
 

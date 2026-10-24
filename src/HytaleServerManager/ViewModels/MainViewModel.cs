@@ -146,6 +146,10 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     public bool CanStartServer => !ServerRunning;
     public bool CanStartTunnel => !TunnelRunning && IsPlayitInstalled;
     public bool CanStopTunnel => TunnelRunning;
+    public bool CanForceStopServer => ServerRunning && !CanUseConsole;
+    public string ServerControlStatus => ServerRunning
+        ? CanUseConsole ? "Controlado por este painel" : "Detectado externamente"
+        : "Pronto para iniciar";
     public string ConsoleAvailabilityText => CanUseConsole
         ? "Console conectado ao servidor atual."
         : ServerRunning
@@ -208,6 +212,8 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         OnPropertyChanged(nameof(CanStartServer));
         OnPropertyChanged(nameof(CanStartTunnel));
         OnPropertyChanged(nameof(CanStopTunnel));
+        OnPropertyChanged(nameof(CanForceStopServer));
+        OnPropertyChanged(nameof(ServerControlStatus));
         OnPropertyChanged(nameof(ConsoleAvailabilityText));
         RefreshSetupStatus();
         return Task.CompletedTask;
@@ -259,6 +265,22 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         catch (Exception ex)
         {
             Notice = "Atenção necessária";
+            AddLog("ERRO: " + ex.Message);
+        }
+        await RefreshAsync();
+    }
+
+    public async Task ForceStopServerAsync()
+    {
+        try
+        {
+            Notice = "Encerrando processo externo...";
+            await _processService.ForceStopServerAsync(Settings);
+            Notice = "Processo externo encerrado";
+        }
+        catch (Exception ex)
+        {
+            Notice = "Não foi possível encerrar o processo";
             AddLog("ERRO: " + ex.Message);
         }
         await RefreshAsync();

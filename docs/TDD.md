@@ -223,6 +223,8 @@ Evitar finalizar o Java à força, desligar o computador durante salvamento ou a
 | T21 | Operador escolhe vincular agente | Console do Playit permanece visível durante a configuração |
 | T22 | Aplicativo e atalho publicados | Ambos exibem o ícone azul com “H” |
 | T23 | Servidor online e túnel desligado | Botão permite ligar somente o Playit sem duplicar o servidor |
+| T24 | Servidor iniciado pelo painel | Indicador mostra controle local e `/stop` encerra com segurança |
+| T25 | Servidor externo detectado | Indicador mostra origem externa e encerramento exige confirmação |
 
 O teste externo validado teve entrada bem-sucedida do jogador remoto `GleamingFjord808` e entrada local de `Saga`, com o firewall reativado.
 
