@@ -1,0 +1,29 @@
+<Application
+    x:Class="HytaleServerManager.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <Color x:Key="AccentColor">#8B7CFF</Color>
+            <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColor}" />
+            <SolidColorBrush x:Key="CardBrush" Color="#C9141B28" />
+            <SolidColorBrush x:Key="CardBorderBrush" Color="#24FFFFFF" />
+            <SolidColorBrush x:Key="SubtleTextBrush" Color="#FFA5AEC2" />
+            <SolidColorBrush x:Key="SuccessBrush" Color="#FF50E3A4" />
+            <SolidColorBrush x:Key="WarningBrush" Color="#FFFFC857" />
+            <SolidColorBrush x:Key="DangerBrush" Color="#FFFF6B7A" />
+
+            <Style x:Key="CardStyle" TargetType="Border">
+                <Setter Property="Background" Value="{StaticResource CardBrush}" />
+                <Setter Property="BorderBrush" Value="{StaticResource CardBorderBrush}" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="CornerRadius" Value="18" />
+                <Setter Property="Padding" Value="20" />
+            </Style>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

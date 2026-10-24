@@ -24,3 +24,11 @@ Thumbs.db
 Desktop.ini
 .vscode/
 .idea/
+
+# Build .NET / WinUI
+bin/
+obj/
+artifacts/
+publish/
+*.user
+*.suo

@@ -227,6 +227,10 @@ A fonte principal de diagnóstico é a janela do servidor. Os logs persistentes 
 - O encerramento do servidor e do agente ainda é manual.
 - Uma evolução possível é um script PowerShell com logs próprios, validação do processo dono da porta e configuração externa em JSON.
 
+## 12.1 Interface gráfica
+
+O projeto agora inclui uma central em C# com WinUI 3. Ela substitui o CMD na operação cotidiana, mantendo este `.bat` como fallback. A arquitetura, o fluxo de processos e o roadmap estão documentados em [`GUI.md`](GUI.md).
+
 ## 13. Controle de mudanças
 
 Qualquer mudança de porta, túnel, nome do mundo, estrutura da instalação ou transporte deve atualizar em conjunto:
