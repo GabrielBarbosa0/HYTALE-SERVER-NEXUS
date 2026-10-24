@@ -8,6 +8,6 @@ if exist "%APP%" (
 )
 
 echo A interface ainda nao esta instalada neste computador.
-echo Iniciando a instalacao local...
+echo Iniciando o bootstrap de desenvolvimento...
 call "%~dp0INSTALAR-E-INICIAR.bat"
 exit /b %ERRORLEVEL%

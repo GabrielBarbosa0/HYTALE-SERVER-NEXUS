@@ -1,0 +1,57 @@
+name: Gerar instalador
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Versão do instalador
+        required: true
+        default: 1.0.0
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Baixar código
+        uses: actions/checkout@v4
+
+      - name: Preparar .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Instalar Inno Setup
+        shell: powershell
+        run: choco install innosetup --yes --no-progress
+
+      - name: Definir versão
+        shell: powershell
+        run: |
+          if ('${{ github.event_name }}' -eq 'workflow_dispatch') {
+            "APP_VERSION=${{ inputs.version }}" | Out-File -FilePath $env:GITHUB_ENV -Append
+          } else {
+            "APP_VERSION=$('${{ github.ref_name }}'.TrimStart('v'))" | Out-File -FilePath $env:GITHUB_ENV -Append
+          }
+
+      - name: Compilar instalador
+        shell: powershell
+        run: ./scripts/Build-Installer.ps1 -Version $env:APP_VERSION
+
+      - name: Publicar artefato
+        uses: actions/upload-artifact@v4
+        with:
+          name: Iniciador-Hytale-Setup-${{ env.APP_VERSION }}
+          path: artifacts/installer/*.exe
+
+      - name: Criar GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: powershell
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "${{ github.ref_name }}" artifacts/installer/*.exe --generate-notes --title "Iniciador Hytale ${{ github.ref_name }}"

@@ -61,15 +61,17 @@ O cartão do servidor diferencia **Controlado por este painel** de **Detectado e
 
 Os comandos frequentes `/auth status`, `/auth persistence` e `/auth persistence Encrypted` possuem botões próprios. Quando um servidor externo é detectado, a interface desabilita os comandos, o início e a troca de mundo, exibe o mundo identificado pelo `.world.lock` e orienta o operador a encerrar a instância no console original.
 
-## Instalação a partir do repositório
+## Instalação
 
-`INSTALAR-E-INICIAR.bat` chama `scripts/Install.ps1`, que:
+O fluxo de distribuição principal usa `Iniciador-Hytale-Setup-x.y.z.exe`, gerado com Inno Setup. O instalador:
 
-1. localiza um SDK .NET 10 existente;
-2. quando necessário, instala o SDK oficial pelo `winget`;
-3. restaura e publica a aplicação autocontida em `%LOCALAPPDATA%\HytaleServerManager\app`;
-4. cria o atalho na Área de Trabalho;
-5. abre o aplicativo publicado.
+1. instala a aplicação autocontida em `%LOCALAPPDATA%\HytaleServerManager\app` sem exigir privilégio de administrador;
+2. cria entradas no menu Iniciar e, opcionalmente, na Área de Trabalho;
+3. registra um desinstalador no Windows;
+4. preserva `settings.json` e os dados externos do Hytale e do Playit.gg em atualizações;
+5. pode abrir o painel ao terminar.
+
+Os scripts `scripts/bootstrap/INSTALAR-E-INICIAR.bat` e `scripts/bootstrap/INICIAR-PAINEL.bat` são ferramentas de desenvolvimento e recuperação. O usuário final não precisa utilizá-los.
 
 ## Encerramento
 
@@ -92,7 +94,7 @@ Nesta primeira versão, a interface só consegue enviar `/stop` para a instânci
 - `auth.key` e `playit.toml` também permanecem locais e fora do Git.
 - O agente Playit.gg usa a instalação local já autorizada.
 - O firewall não é desligado nem alterado.
-- A interface não oferece encerramento forçado do mundo.
+- O encerramento forçado só é oferecido para um processo externo, com confirmação explícita e aviso de risco.
 
 ## Build local
 
@@ -111,6 +113,14 @@ dotnet publish src/HytaleServerManager/HytaleServerManager.csproj `
   -o "$env:LOCALAPPDATA\HytaleServerManager\app"
 ```
 
+Para gerar o instalador completo, com Inno Setup 6 instalado:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\Build-Installer.ps1 -Version 1.0.0
+```
+
+O resultado fica em `artifacts\installer\Iniciador-Hytale-Setup-1.0.0.exe`. O workflow `.github/workflows/release.yml` repete esse processo em tags `v*` e anexa o executável à Release correspondente.
+
 ## Próximas etapas
 
 1. gráficos históricos de CPU, RAM e rede;
@@ -119,6 +129,6 @@ dotnet publish src/HytaleServerManager/HytaleServerManager.csproj `
 4. pesquisa e filtros do console;
 5. notificações e ícone na bandeja;
 6. diagnóstico detalhado do túnel e firewall;
-7. instalador e atualização automática da interface;
+7. atualização automática da interface;
 8. testes unitários e de integração dos serviços;
 9. leitura local, sem segredos, do endereço público anunciado pelo agente Playit.

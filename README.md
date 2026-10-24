@@ -4,7 +4,7 @@ Aplicativo WinUI 3 em C# para escolher e controlar mundos do servidor dedicado d
 
 ## Interface gráfica
 
-Na primeira vez, execute `INSTALAR-E-INICIAR.bat`. Nas próximas vezes, use `INICIAR-PAINEL.bat` ou o atalho **Iniciador do Servidor Hytale** na Área de Trabalho. Se a interface ainda não estiver instalada, `INICIAR-PAINEL.bat` chama o instalador automaticamente.
+Baixe o arquivo `Iniciador-Hytale-Setup-x.y.z.exe` na página de [Releases](https://github.com/GabrielBarbosa0/INICIADOR-SERVIDOR-HYTALE/releases), execute o instalador e abra **Iniciador do Servidor Hytale** pelo atalho da Área de Trabalho ou pelo menu Iniciar. O instalador inclui a aplicação e o runtime necessários; não é preciso instalar Visual Studio nem o SDK .NET.
 
 O MVP atual oferece:
 
@@ -33,13 +33,13 @@ O MVP atual oferece:
 ## Primeiro uso em outro computador
 
 1. Instale o Hytale pelo launcher oficial e tenha pelo menos um save com `config.json`.
-2. Baixe este repositório e execute `INSTALAR-E-INICIAR.bat`. Se necessário, ele instala o SDK .NET 10 oficial pelo `winget`, publica a aplicação localmente e cria o atalho.
+2. Baixe a versão mais recente em [Releases](https://github.com/GabrielBarbosa0/INICIADOR-SERVIDOR-HYTALE/releases) e execute `Iniciador-Hytale-Setup-x.y.z.exe`.
 3. No painel, use **Baixar Playit** e depois **Vincular agente**. Entre na sua própria conta e crie um túnel UDP para `127.0.0.1:5520`.
 4. Copie o endereço público desse túnel para **Configuração > Endereço público** e salve.
 5. Selecione o mundo e inicie o servidor.
 6. Se a autorização Hytale estiver pendente, pressione **Gerar código**, abra a confirmação e autorize com a sua própria conta Hytale.
 
-O mundo só pode ser trocado com o servidor desligado. Se um servidor foi iniciado por outra janela ou pelo `.bat`, o painel consegue monitorá-lo, mas não consegue assumir sua entrada de console; encerre-o no console original antes de selecionar outro mundo.
+O mundo só pode ser trocado com o servidor desligado. Se um servidor foi iniciado por outra janela, o painel consegue monitorá-lo, mas não consegue assumir sua entrada de console; encerre-o no console original antes de selecionar outro mundo.
 
 Quando o console original não estiver disponível, **Encerrar processo externo** substitui o Gerenciador de Tarefas. Essa é uma opção de emergência: diferentemente de **Salvar e parar servidor**, ela não consegue enviar `/stop` e pode perder alterações posteriores ao último salvamento.
 
@@ -49,7 +49,7 @@ Contas, tokens, `auth.enc`, `auth.key`, `playit.toml`, mundos e endereços pesso
 
 ## Uso rápido
 
-1. Execute `INICIAR-PAINEL.bat` ou use o atalho **Iniciador do Servidor Hytale**.
+1. Use o atalho **Iniciador do Servidor Hytale** na Área de Trabalho ou no menu Iniciar.
 2. Selecione o mundo e pressione **Iniciar tudo**.
 3. Aguarde a mensagem de que o universo está pronto.
 4. Entre localmente pelo Hytale.
@@ -70,6 +70,20 @@ O firewall do Windows deve permanecer ativado. O iniciador reconhece quando o Pl
 ## Documentação
 
 Consulte [`docs/TDD.md`](docs/TDD.md) para o servidor e [`docs/GUI.md`](docs/GUI.md) para a arquitetura da interface.
+
+## Desenvolvimento e geração do instalador
+
+Os arquivos `.bat` foram mantidos somente em `scripts/bootstrap/` como ferramentas auxiliares para quem trabalha no código-fonte. Eles não fazem parte do fluxo do usuário comum.
+
+Para compilar o instalador localmente, instale o SDK .NET 10 e o Inno Setup 6 e execute:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\Build-Installer.ps1 -Version 1.0.0
+```
+
+O executável será criado em `artifacts\installer`. Tags no formato `v1.0.0` também acionam o workflow de release do GitHub, que compila e publica o instalador automaticamente.
+
+Enquanto o projeto não possuir um certificado de assinatura de código, o Windows pode exibir o aviso de editor desconhecido. O arquivo deve ser obtido somente desta página oficial de Releases.
 
 ## Segurança
 

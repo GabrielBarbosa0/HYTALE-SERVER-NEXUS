@@ -22,7 +22,7 @@ O iniciador deve:
 3. impedir uma segunda instância do servidor na porta `5520`;
 4. permitir escolher um save válido e executar o servidor dentro da pasta desse mundo;
 5. exibir o endereço que deve ser enviado aos amigos;
-6. manter o console visível para operação e diagnóstico.
+6. manter o console integrado à interface para operação e diagnóstico.
 
 Não fazem parte do escopo: baixar o Hytale, criar uma conta, gerar mundos, publicar este repositório remotamente, copiar o mundo para o Git ou armazenar credenciais.
 
@@ -54,8 +54,9 @@ Componentes:
 | Componente | Responsabilidade |
 |---|---|
 | Interface WinUI 3 | Descobre mundos, guarda a seleção e controla os processos |
-| `INICIAR-PAINEL.bat` | Abre a aplicação instalada ou chama o instalador no primeiro uso |
-| `INSTALAR-E-INICIAR.bat` | Publica a aplicação localmente e cria o atalho |
+| `Iniciador-Hytale-Setup-x.y.z.exe` | Instala a aplicação, atalhos e desinstalador para o usuário atual |
+| `scripts/bootstrap/INICIAR-PAINEL.bat` | Ferramenta auxiliar para abrir ou recompilar a aplicação em desenvolvimento |
+| `scripts/bootstrap/INSTALAR-E-INICIAR.bat` | Ferramenta auxiliar que chama `scripts/Install.ps1` em desenvolvimento |
 | Java incluído no Hytale | Executa o servidor dedicado |
 | `HytaleServer.jar` | Hospeda o mundo e autentica jogadores |
 | Playit.gg | Expõe a porta UDP local sem encaminhamento manual no roteador |
@@ -83,7 +84,7 @@ Cada subpasta que contém `config.json` é exibida como opção. O diretório de
 2. O iniciador verifica `config.json`, Java, servidor e assets.
 3. Se o agente estiver ausente em `%LOCALAPPDATA%`, tenta restaurá-lo usando a cópia local em `tools`.
 4. Procura um processo chamado `playit-windows-x86_64-signed`.
-5. Se não existir, abre o agente Playit.gg minimizado.
+5. Se não existir, abre o agente Playit.gg oculto em segundo plano.
 6. Consulta os endpoints UDP do Windows para saber se a porta `5520` já está em uso.
 7. Se estiver em uso, informa que o servidor já está ligado e não cria outra instância.
 8. Se estiver livre, muda o diretório para a pasta do mundo selecionado.
@@ -176,24 +177,23 @@ Revisar os avisos no console. Mods desativados pela configuração não são nec
 
 ### Hostname público alterado
 
-Se o túnel for recriado, o domínio ou a porta pública podem mudar. Atualizar `PUBLIC_ADDRESS` no `.bat`, este documento e o `README.md` na mesma alteração.
+Se o túnel for recriado, o domínio ou a porta pública podem mudar. Atualizar o campo **Endereço público** na interface. Se o endereço padrão do projeto mudar, atualizar também a configuração inicial, este documento e o `README.md` na mesma alteração.
 
 ## 9. Operação segura
 
 ### Iniciar
 
-1. Dar dois cliques no `.bat`.
-2. Aguardar o carregamento completo.
-3. Manter as janelas do servidor e do agente abertas.
+1. Abrir **Iniciador do Servidor Hytale** pelo atalho.
+2. Selecionar o mundo e pressionar **Iniciar tudo**.
+3. Aguardar o carregamento completo no console visual.
 4. Compartilhar apenas o endereço público, nunca arquivos de autenticação.
 
 ### Encerrar
 
 1. Avisar os jogadores.
-2. Pressionar `Ctrl+C` na janela do servidor.
-3. Confirmar o encerramento, caso o Windows pergunte.
-4. Aguardar a gravação do mundo.
-5. O agente Playit.gg pode ser fechado depois do servidor.
+2. Pressionar **Salvar e parar servidor**.
+3. Aguardar a confirmação de encerramento no console visual.
+4. Desligar o túnel depois do servidor, se desejado.
 
 Evitar finalizar o Java à força, desligar o computador durante salvamento ou abrir o mesmo mundo simultaneamente em outra instância.
 
@@ -216,7 +216,7 @@ Evitar finalizar o Java à força, desligar o computador durante salvamento ou a
 | T13 | Mundo sem `auth.enc` | Assistente indica autorização Hytale pendente |
 | T14 | Saída contém código e URL de autorização | Interface apresenta código e abre apenas URL HTTPS oficial |
 | T15 | Comando digitado com servidor iniciado pela GUI | Comando chega à entrada padrão do servidor |
-| T16 | Clone sem aplicação publicada | Instalador publica localmente e cria o atalho |
+| T16 | Computador sem aplicação instalada | Instalador copia a aplicação, cria o atalho e registra o desinstalador |
 | T17 | Perfil sem `playit.toml` | Interface indica vinculação Playit pendente |
 | T18 | Servidor iniciado por outra janela | Mundo ativo é exibido e comandos/troca ficam desabilitados |
 | T19 | Servidor iniciado pela interface | Botões de status e persistência enviam os comandos correspondentes |
@@ -226,6 +226,8 @@ Evitar finalizar o Java à força, desligar o computador durante salvamento ou a
 | T23 | Servidor online e túnel desligado | Botão permite ligar somente o Playit sem duplicar o servidor |
 | T24 | Servidor iniciado pelo painel | Indicador mostra controle local e `/stop` encerra com segurança |
 | T25 | Servidor externo detectado | Indicador mostra origem externa e encerramento exige confirmação |
+| T26 | Instalador executado sem SDK .NET | Aplicação autocontida é instalada e abre normalmente |
+| T27 | Nova versão instalada sobre a anterior | Binários são atualizados e as configurações locais são preservadas |
 
 O teste externo validado teve entrada bem-sucedida do jogador remoto `GleamingFjord808` e entrada local de `Saga`, com o firewall reativado.
 
@@ -252,7 +254,7 @@ A fonte principal de diagnóstico é a janela do servidor. Os logs persistentes 
 
 ## 12.1 Interface gráfica
 
-O projeto usa uma central em C# com WinUI 3 como única interface de operação. Os dois arquivos `.bat` restantes apenas instalam ou abrem essa aplicação. A arquitetura, o fluxo de processos e o roadmap estão documentados em [`GUI.md`](GUI.md).
+O projeto usa uma central em C# com WinUI 3 como única interface de operação. A distribuição normal é feita por um instalador `.exe`; os dois arquivos `.bat` ficam em `scripts/bootstrap/` apenas para desenvolvimento e recuperação. A arquitetura, o fluxo de processos e o roadmap estão documentados em [`GUI.md`](GUI.md).
 
 ## 13. Controle de mudanças
 
