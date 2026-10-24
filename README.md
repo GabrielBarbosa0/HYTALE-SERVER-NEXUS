@@ -1,15 +1,17 @@
-# CENTRAL DO SERVIDOR HYTALE — CAVALEIROS CLT
+# INICIADOR DO SERVIDOR HYTALE
 
-Aplicativo WinUI 3 em C# para controlar o servidor dedicado do mundo **CAVALEIROS CLT** e o túnel do Playit.gg. O iniciador em lote original permanece disponível como fallback.
+Aplicativo WinUI 3 em C# para escolher e controlar mundos do servidor dedicado do Hytale e o túnel do Playit.gg. O iniciador em lote original do **CAVALEIROS CLT** permanece disponível como fallback.
 
 ## Interface gráfica
 
-Execute `INICIAR-PAINEL.bat` ou o atalho **Central do Servidor CAVALEIROS CLT** na Área de Trabalho.
+Execute `INICIAR-PAINEL.bat` ou o atalho **Iniciador do Servidor Hytale** na Área de Trabalho.
 
 O MVP atual oferece:
 
 - status do servidor, túnel e porta UDP;
 - início conjunto do Hytale e Playit.gg;
+- descoberta automática e seleção dos mundos válidos na pasta de saves;
+- título dinâmico com o nome do mundo selecionado;
 - encerramento seguro do servidor pelo comando `/stop`;
 - endereço público com cópia para a área de transferência;
 - CPU, memória, uptime e jogadores detectados nos logs;
@@ -19,11 +21,12 @@ O MVP atual oferece:
 
 ## Uso rápido
 
-1. Execute `INICIAR-PAINEL.bat` (recomendado) ou `INICIAR-CAVALEIROS-CLT.bat` (fallback).
-2. Aguarde a mensagem de que o universo está pronto.
-3. Entre localmente pelo Hytale.
-4. Envie aos amigos o endereço `cone-dq.tun.ply.gg:2172`.
-5. Para desligar o servidor corretamente, pressione `Ctrl+C` na janela dele e aguarde o encerramento.
+1. Execute `INICIAR-PAINEL.bat` (recomendado) ou `INICIAR-CAVALEIROS-CLT.bat` (fallback exclusivo desse mundo).
+2. Selecione o mundo e pressione **Iniciar tudo**.
+3. Aguarde a mensagem de que o universo está pronto.
+4. Entre localmente pelo Hytale.
+5. Envie aos amigos o endereço `cone-dq.tun.ply.gg:2172`.
+6. Para desligar com segurança, use **Salvar e parar servidor**.
 
 O firewall do Windows deve permanecer ativado. O iniciador reconhece quando o Playit.gg ou a porta UDP `5520` já estão em uso e evita iniciar uma segunda instância.
 
@@ -36,7 +39,7 @@ INICIAR-CAVALEIROS-CLT.bat --check
 ## Pré-requisitos
 
 - Hytale instalado pelo launcher oficial.
-- Mundo em `%APPDATA%\Hytale\UserData\Saves\CAVALEIROS CLT`.
+- Um ou mais mundos com `config.json` em `%APPDATA%\Hytale\UserData\Saves`.
 - Agente Playit.gg `1.0.12` em `%LOCALAPPDATA%\PlayitGG\playit-windows-x86_64-signed.exe`.
 - Cópia local de recuperação em `tools\playit-windows-x86_64-signed.exe` (ignorada pelo Git).
 - Túnel Playit.gg configurado para encaminhar o endereço público à porta local UDP `5520`.

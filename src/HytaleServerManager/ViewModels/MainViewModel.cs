@@ -18,6 +18,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     private static readonly Regex LeavePattern = new("Player '([^']+)' (left|disconnected)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
     private readonly SettingsService _settingsService;
     private readonly ServerProcessService _processService;
+    private readonly WorldDiscoveryService _worldDiscoveryService;
     private readonly DispatcherQueue _dispatcher;
     private readonly HashSet<string> _players = new(StringComparer.OrdinalIgnoreCase);
     private bool _serverRunning;
@@ -31,11 +32,14 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     private string _notice = "Pronto para iniciar";
     private string _initialMemoryText = "768";
     private string _maximumMemoryText = "4096";
+    private WorldOption? _selectedWorld;
+    private bool _initialized;
 
-    public MainViewModel(SettingsService settingsService, ServerProcessService processService, DispatcherQueue dispatcher)
+    public MainViewModel(SettingsService settingsService, ServerProcessService processService, WorldDiscoveryService worldDiscoveryService, DispatcherQueue dispatcher)
     {
         _settingsService = settingsService;
         _processService = processService;
+        _worldDiscoveryService = worldDiscoveryService;
         _dispatcher = dispatcher;
         _processService.LogReceived += OnLogReceived;
 
@@ -51,6 +55,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     public AppSettings Settings { get; private set; } = new();
     public ObservableCollection<string> Logs { get; } = [];
     public ObservableCollection<string> Players { get; } = [];
+    public ObservableCollection<WorldOption> Worlds { get; } = [];
 
     public ICommand StartCommand { get; }
     public ICommand StopCommand { get; }
@@ -71,6 +76,23 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     public string Notice { get => _notice; private set => SetProperty(ref _notice, value); }
     public string InitialMemoryText { get => _initialMemoryText; set => SetProperty(ref _initialMemoryText, value); }
     public string MaximumMemoryText { get => _maximumMemoryText; set => SetProperty(ref _maximumMemoryText, value); }
+    public WorldOption? SelectedWorld
+    {
+        get => _selectedWorld;
+        set
+        {
+            if (!SetProperty(ref _selectedWorld, value) || value is null) return;
+            Settings.WorldPath = value.Path;
+            OnPropertyChanged(nameof(SelectedWorldName));
+            OnPropertyChanged(nameof(SelectedWorldPath));
+            Notice = $"Mundo selecionado: {value.Name}";
+            if (_initialized) _ = PersistWorldSelectionAsync();
+        }
+    }
+    public string SelectedWorldName => SelectedWorld?.Name ?? "Selecione um mundo";
+    public string SelectedWorldPath => SelectedWorld?.Path ?? "Nenhum mundo válido foi encontrado";
+    public string WorldCountText => Worlds.Count == 1 ? "1 mundo encontrado" : $"{Worlds.Count} mundos encontrados";
+    public bool CanSelectWorld => !ServerRunning;
     public string PlayerCountText => _players.Count == 1 ? "1 jogador" : $"{_players.Count} jogadores";
     public string MemoryText => $"{MemoryMb:N0} MB";
     public string CpuText => $"{CpuPercent:N1}%";
@@ -84,6 +106,8 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         InitialMemoryText = Settings.InitialMemoryMb.ToString();
         MaximumMemoryText = Settings.MaximumMemoryMb.ToString();
         OnPropertyChanged(nameof(Settings));
+        LoadWorlds();
+        _initialized = true;
         AddLog("Interface iniciada. O .bat continua disponível como fallback.");
         await RefreshAsync();
     }
@@ -106,6 +130,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         OnPropertyChanged(nameof(PortStatus));
         OnPropertyChanged(nameof(ServerStatusBrush));
         OnPropertyChanged(nameof(TunnelStatusBrush));
+        OnPropertyChanged(nameof(CanSelectWorld));
         return Task.CompletedTask;
     }
 
@@ -113,8 +138,18 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     {
         try
         {
+            if (SelectedWorld is null)
+                throw new InvalidOperationException("Selecione um mundo válido antes de iniciar.");
+
             Notice = "Iniciando serviços...";
             ApplyMemorySettings();
+            if (!ServerRunning)
+            {
+                _players.Clear();
+                Players.Clear();
+                OnPropertyChanged(nameof(PlayerCountText));
+            }
+            AddLog($"Iniciando mundo: {SelectedWorld.Name}");
             await _processService.StartAllAsync(Settings);
             Notice = "Inicialização solicitada";
             await RefreshAsync();
@@ -179,6 +214,35 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
             throw new InvalidOperationException("Use números inteiros para a memória em MB.");
         Settings.InitialMemoryMb = initial;
         Settings.MaximumMemoryMb = maximum;
+    }
+
+    private void LoadWorlds()
+    {
+        Worlds.Clear();
+        foreach (var world in _worldDiscoveryService.Discover(Settings.SavesRootPath)) Worlds.Add(world);
+
+        SelectedWorld = Worlds.FirstOrDefault(world =>
+            string.Equals(world.Path, Settings.WorldPath, StringComparison.OrdinalIgnoreCase))
+            ?? Worlds.FirstOrDefault(world =>
+                string.Equals(world.Name, "CAVALEIROS CLT", StringComparison.OrdinalIgnoreCase))
+            ?? Worlds.FirstOrDefault();
+
+        OnPropertyChanged(nameof(WorldCountText));
+        if (Worlds.Count == 0) AddLog($"Nenhum mundo válido encontrado em {Settings.SavesRootPath}");
+        else AddLog($"{WorldCountText}: {string.Join(", ", Worlds.Select(world => world.Name))}.");
+    }
+
+    private async Task PersistWorldSelectionAsync()
+    {
+        try
+        {
+            await _settingsService.SaveAsync(Settings);
+            AddLog($"Mundo selecionado: {SelectedWorldName}");
+        }
+        catch (Exception ex)
+        {
+            AddLog("ERRO ao salvar o mundo selecionado: " + ex.Message);
+        }
     }
 
     private void OnLogReceived(string line) => _dispatcher.TryEnqueue(() => AddLog(line));

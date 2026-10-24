@@ -20,7 +20,7 @@ public sealed partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
-        ViewModel = new MainViewModel(new SettingsService(), new ServerProcessService(), DispatcherQueue);
+        ViewModel = new MainViewModel(new SettingsService(), new ServerProcessService(), new WorldDiscoveryService(), DispatcherQueue);
         Root.DataContext = ViewModel;
 
         ExtendsContentIntoTitleBar = true;

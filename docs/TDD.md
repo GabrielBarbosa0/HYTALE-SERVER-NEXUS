@@ -1,11 +1,11 @@
-# TDD — Iniciador do servidor Hytale CAVALEIROS CLT
+# TDD — Iniciador do servidor Hytale
 
 ## 1. Identificação
 
 - **Documento:** Technical Design Document (Documento de Projeto Técnico)
-- **Projeto:** INICIADOR-HYTALE-CAVALEIROS-CLT
+- **Projeto:** INICIADOR-SERVIDOR-HYTALE
 - **Plataforma:** Windows
-- **Mundo:** CAVALEIROS CLT
+- **Mundos detectados:** qualquer save válido; CAVALEIROS CLT é o padrão legado
 - **Porta local:** UDP `5520`
 - **Endereço público atual:** `cone-dq.tun.ply.gg:2172`
 - **Transporte do Hytale:** QUICHE/UDP
@@ -20,7 +20,7 @@ O iniciador deve:
 1. validar os arquivos essenciais;
 2. iniciar o agente Playit.gg se ele ainda não estiver executando;
 3. impedir uma segunda instância do servidor na porta `5520`;
-4. executar o servidor dentro da pasta do mundo CAVALEIROS CLT;
+4. permitir escolher um save válido e executar o servidor dentro da pasta desse mundo;
 5. exibir o endereço que deve ser enviado aos amigos;
 6. manter o console visível para operação e diagnóstico.
 
@@ -46,13 +46,14 @@ Agente Playit.gg no computador do servidor
 HytaleServer.jar
     │
     ▼
-Mundo CAVALEIROS CLT / universo default
+Mundo selecionado / universo default
 ```
 
 Componentes:
 
 | Componente | Responsabilidade |
 |---|---|
+| Interface WinUI 3 | Descobre mundos, guarda a seleção e controla os processos |
 | `INICIAR-CAVALEIROS-CLT.bat` | Orquestra validações e inicialização |
 | Java incluído no Hytale | Executa o servidor dedicado |
 | `HytaleServer.jar` | Hospeda o mundo e autentica jogadores |
@@ -65,7 +66,7 @@ O script usa variáveis do Windows para não depender do nome do usuário:
 
 | Recurso | Caminho esperado |
 |---|---|
-| Mundo | `%APPDATA%\Hytale\UserData\Saves\CAVALEIROS CLT` |
+| Raiz dos mundos | `%APPDATA%\Hytale\UserData\Saves` |
 | Java | `%APPDATA%\Hytale\install\release\package\jre\latest\bin\java.exe` |
 | Servidor | `%APPDATA%\Hytale\install\release\package\game\latest\Server\HytaleServer.jar` |
 | Assets | `%APPDATA%\Hytale\install\release\package\game\latest\Assets.zip` |
@@ -73,19 +74,20 @@ O script usa variáveis do Windows para não depender do nome do usuário:
 | Playit.gg | `%LOCALAPPDATA%\PlayitGG\playit-windows-x86_64-signed.exe` |
 | Cópia local de recuperação | `tools\playit-windows-x86_64-signed.exe` |
 
-O diretório de trabalho do Java é a pasta do mundo. Isso é essencial: `config.json`, `auth.enc`, `universe`, `mods`, backups e `.world.lock` são resolvidos a partir desse local.
+Cada subpasta que contém `config.json` é exibida como opção. O diretório de trabalho do Java é a pasta do mundo selecionado. Isso é essencial: `config.json`, `auth.enc`, `universe`, `mods`, backups e `.world.lock` são resolvidos a partir desse local.
 
 ## 5. Sequência de inicialização
 
-1. O script verifica `config.json`, Java, servidor e assets.
-2. Se o agente estiver ausente em `%LOCALAPPDATA%`, tenta restaurá-lo usando a cópia local em `tools`.
-3. Procura um processo chamado `playit-windows-x86_64-signed`.
-4. Se não existir, abre o agente Playit.gg minimizado.
-5. Consulta os endpoints UDP do Windows para saber se a porta `5520` já está em uso.
-6. Se estiver em uso, informa que o servidor já está ligado e não cria outra instância.
-7. Se estiver livre, muda o diretório para a pasta do mundo.
-8. Executa o servidor com bind em `0.0.0.0:5520` e transporte `QUICHE`.
-9. O servidor carrega o universo e o mundo interno `default` pertencente ao save CAVALEIROS CLT.
+1. A interface descobre os mundos com `config.json` e restaura a última seleção.
+2. O iniciador verifica `config.json`, Java, servidor e assets.
+3. Se o agente estiver ausente em `%LOCALAPPDATA%`, tenta restaurá-lo usando a cópia local em `tools`.
+4. Procura um processo chamado `playit-windows-x86_64-signed`.
+5. Se não existir, abre o agente Playit.gg minimizado.
+6. Consulta os endpoints UDP do Windows para saber se a porta `5520` já está em uso.
+7. Se estiver em uso, informa que o servidor já está ligado e não cria outra instância.
+8. Se estiver livre, muda o diretório para a pasta do mundo selecionado.
+9. Executa o servidor com bind em `0.0.0.0:5520` e transporte `QUICHE`.
+10. O servidor carrega o universo e o mundo interno `default` pertencente ao save selecionado.
 
 Parâmetros relevantes:
 
@@ -138,9 +140,9 @@ Se não aparecer tentativa alguma no console, o problema provavelmente está ant
 
 Confirmar que o agente em uso é o `1.0.12` no caminho documentado. Encerrar instâncias antigas do Playit.gg antes de abrir a nova.
 
-### “O mundo CAVALEIROS CLT não foi encontrado”
+### O mundo não aparece no seletor
 
-Confirmar a existência de `%APPDATA%\Hytale\UserData\Saves\CAVALEIROS CLT\config.json`. Se o mundo tiver sido renomeado, ajustar a variável `WORLD` no script.
+Confirmar que ele está diretamente dentro de `%APPDATA%\Hytale\UserData\Saves` e contém `config.json`. Reiniciar a interface para refazer a descoberta. O `.bat` legado continua fixo no CAVALEIROS CLT.
 
 ### Java, servidor ou `Assets.zip` não encontrado
 
@@ -202,6 +204,9 @@ Evitar finalizar o Java à força, desligar o computador durante salvamento ou a
 | T07 | Jogador externo entra | Autenticação termina e o jogador aparece no mundo |
 | T08 | Firewall permanece ativado | Jogador externo continua conectando pelo túnel |
 | T09 | Encerramento com `Ctrl+C` | Servidor salva e encerra sem corrupção aparente |
+| T10 | Quatro saves válidos instalados | Os quatro aparecem no seletor em ordem alfabética |
+| T11 | Mundo selecionado e aplicativo reaberto | A última seleção é restaurada |
+| T12 | Servidor em execução | O seletor de mundo fica desabilitado |
 
 O teste externo validado teve entrada bem-sucedida do jogador remoto `GleamingFjord808` e entrada local de `Saga`, com o firewall reativado.
 

@@ -25,12 +25,16 @@ src/HytaleServerManager/
 ## Fluxo de inicialização
 
 1. Carrega `%LOCALAPPDATA%\HytaleServerManager\settings.json` ou cria padrões em memória.
-2. Descobre processos existentes do Java e Playit.gg.
-3. Atualiza status, porta e métricas a cada segundo.
-4. Ao iniciar, valida mundo, Java, JAR, assets, Playit.gg e limites de memória.
-5. Abre o túnel se necessário.
-6. Executa o Hytale sem janela de CMD, capturando stdout e stderr.
-7. Encaminha as linhas para o console visual e identifica entrada/saída de jogadores.
+2. Procura subpastas com `config.json` em `%APPDATA%\Hytale\UserData\Saves` e monta o seletor de mundos.
+3. Restaura o último mundo selecionado; se ele não existir, prefere `CAVALEIROS CLT` e depois o primeiro mundo válido.
+4. Descobre processos existentes do Java e Playit.gg.
+5. Atualiza status, porta e métricas a cada segundo.
+6. Ao iniciar, valida o mundo selecionado, Java, JAR, assets, Playit.gg e limites de memória.
+7. Abre o túnel se necessário.
+8. Executa o Hytale sem janela de CMD, capturando stdout e stderr.
+9. Encaminha as linhas para o console visual e identifica entrada/saída de jogadores.
+
+O seletor é desabilitado enquanto o servidor está ligado. A escolha é persistida automaticamente em `settings.json`, e o nome exibido no topo acompanha o mundo atual.
 
 ## Encerramento
 
@@ -75,7 +79,7 @@ dotnet publish src/HytaleServerManager/HytaleServerManager.csproj `
 
 1. gráficos históricos de CPU, RAM e rede;
 2. backup manual e agendado;
-3. editor completo de caminhos e seleção de mundo;
+3. editor completo de caminhos e atualização manual da lista de mundos;
 4. pesquisa e filtros do console;
 5. notificações e ícone na bandeja;
 6. diagnóstico detalhado do túnel e firewall;

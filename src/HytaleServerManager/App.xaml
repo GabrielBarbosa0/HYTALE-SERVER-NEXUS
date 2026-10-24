@@ -8,7 +8,7 @@
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
             </ResourceDictionary.MergedDictionaries>
 
-            <Color x:Key="AccentColor">#8B7CFF</Color>
+            <Color x:Key="AccentColor">#2583FF</Color>
             <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColor}" />
             <SolidColorBrush x:Key="CardBrush" Color="#C9141B28" />
             <SolidColorBrush x:Key="CardBorderBrush" Color="#24FFFFFF" />
