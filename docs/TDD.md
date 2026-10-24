@@ -219,6 +219,9 @@ Evitar finalizar o Java à força, desligar o computador durante salvamento ou a
 | T17 | Perfil sem `playit.toml` | Interface indica vinculação Playit pendente |
 | T18 | Servidor iniciado por outra janela | Mundo ativo é exibido e comandos/troca ficam desabilitados |
 | T19 | Servidor iniciado pela interface | Botões de status e persistência enviam os comandos correspondentes |
+| T20 | Playit iniciado na operação normal | Agente executa sem console ou segundo ícone na barra |
+| T21 | Operador escolhe vincular agente | Console do Playit permanece visível durante a configuração |
+| T22 | Aplicativo e atalho publicados | Ambos exibem o ícone azul com “H” |
 
 O teste externo validado teve entrada bem-sucedida do jogador remoto `GleamingFjord808` e entrada local de `Saga`, com o firewall reativado.
 

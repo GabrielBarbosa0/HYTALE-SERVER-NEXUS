@@ -18,4 +18,5 @@ public sealed class AppSettings
     public int ServerPort { get; set; } = 5520;
     public int InitialMemoryMb { get; set; } = 768;
     public int MaximumMemoryMb { get; set; } = 4096;
+    public bool ShowPlayitConsole { get; set; }
 }

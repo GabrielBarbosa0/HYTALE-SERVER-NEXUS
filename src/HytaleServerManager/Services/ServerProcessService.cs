@@ -1,13 +1,17 @@
 using System.Diagnostics;
 using System.Net.NetworkInformation;
+using System.Runtime.InteropServices;
 using HytaleServerManager.Models;
 
 namespace HytaleServerManager.Services;
 
 public sealed class ServerProcessService : IDisposable
 {
+    private const int SwHide = 0;
+    private const int SwShow = 5;
     private Process? _serverProcess;
     private Process? _playitProcess;
+    private bool _forceTunnelVisible;
     private TimeSpan _lastCpuTime;
     private DateTimeOffset _lastCpuSample = DateTimeOffset.UtcNow;
 
@@ -25,6 +29,7 @@ public sealed class ServerProcessService : IDisposable
     public async Task StartAllAsync(AppSettings settings)
     {
         Validate(settings);
+        _forceTunnelVisible = false;
         StartTunnel(settings, minimized: true);
 
         if (FindServerProcess(settings) is not null)
@@ -117,7 +122,31 @@ public sealed class ServerProcessService : IDisposable
     {
         if (!File.Exists(settings.PlayitPath))
             throw new FileNotFoundException("Instale o agente oficial do Playit.gg antes de vinculá-lo.", settings.PlayitPath);
+
+        var existing = _playitProcess ?? FindPlayitProcess();
+        if (existing is { HasExited: false })
+        {
+            existing.Refresh();
+            if (existing.MainWindowHandle == IntPtr.Zero)
+            {
+                existing.Kill(entireProcessTree: true);
+                existing.WaitForExit(5000);
+                _playitProcess = null;
+            }
+        }
+
+        _forceTunnelVisible = true;
         StartTunnel(settings, minimized: false);
+    }
+
+    public void ApplyTunnelWindowPreference(AppSettings settings)
+    {
+        var process = _playitProcess ?? FindPlayitProcess();
+        if (process is null || process.HasExited) return;
+
+        process.Refresh();
+        if (process.MainWindowHandle != IntPtr.Zero)
+            ShowWindow(process.MainWindowHandle, _forceTunnelVisible || settings.ShowPlayitConsole ? SwShow : SwHide);
     }
 
     public static void OpenUrl(string url)
@@ -137,6 +166,7 @@ public sealed class ServerProcessService : IDisposable
         }
 
         process.Kill(entireProcessTree: true);
+        _forceTunnelVisible = false;
         WriteLog("Túnel Playit.gg encerrado.");
     }
 
@@ -199,18 +229,41 @@ public sealed class ServerProcessService : IDisposable
         _playitProcess = FindPlayitProcess();
         if (_playitProcess is { HasExited: false })
         {
+            ApplyTunnelWindowPreference(settings);
             WriteLog("O túnel Playit.gg já está ligado.");
             return;
         }
 
-        WriteLog("Iniciando o túnel Playit.gg...");
-        _playitProcess = Process.Start(new ProcessStartInfo
+        if (!minimized || settings.ShowPlayitConsole)
+        {
+            WriteLog("Iniciando o túnel Playit.gg com console visível...");
+            _playitProcess = Process.Start(new ProcessStartInfo
+            {
+                FileName = settings.PlayitPath,
+                WorkingDirectory = Path.GetDirectoryName(settings.PlayitPath)!,
+                UseShellExecute = true,
+                WindowStyle = ProcessWindowStyle.Normal
+            });
+            return;
+        }
+
+        WriteLog("Iniciando o túnel Playit.gg em segundo plano...");
+        var startInfo = new ProcessStartInfo
         {
             FileName = settings.PlayitPath,
             WorkingDirectory = Path.GetDirectoryName(settings.PlayitPath)!,
-            UseShellExecute = true,
-            WindowStyle = minimized ? ProcessWindowStyle.Minimized : ProcessWindowStyle.Normal
-        });
+            UseShellExecute = false,
+            CreateNoWindow = true,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true
+        };
+        _playitProcess = new Process { StartInfo = startInfo, EnableRaisingEvents = true };
+        _playitProcess.OutputDataReceived += (_, _) => { };
+        _playitProcess.ErrorDataReceived += (_, _) => { };
+        _playitProcess.Exited += (_, _) => WriteLog("O processo do Playit.gg foi encerrado.");
+        if (!_playitProcess.Start()) throw new InvalidOperationException("O agente Playit.gg não pôde ser iniciado.");
+        _playitProcess.BeginOutputReadLine();
+        _playitProcess.BeginErrorReadLine();
     }
 
     private Process? FindServerProcess(AppSettings settings)
@@ -259,4 +312,8 @@ public sealed class ServerProcessService : IDisposable
         _serverProcess?.Dispose();
         _playitProcess?.Dispose();
     }
+
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool ShowWindow(IntPtr windowHandle, int command);
 }

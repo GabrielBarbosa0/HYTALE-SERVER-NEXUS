@@ -178,6 +178,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
 
     public Task RefreshAsync()
     {
+        _processService.ApplyTunnelWindowPreference(Settings);
         var snapshot = _processService.GetSnapshot(Settings);
         ServerRunning = snapshot.ServerRunning;
         TunnelRunning = snapshot.TunnelRunning;

@@ -49,6 +49,7 @@ $shortcut = $shell.CreateShortcut($shortcutPath)
 $shortcut.TargetPath = $applicationPath
 $shortcut.WorkingDirectory = $installDirectory
 $shortcut.Description = 'Iniciador gráfico dos servidores Hytale'
+$shortcut.IconLocation = "$applicationPath,0"
 $shortcut.Save()
 
 Write-Host 'Instalacao concluida. Abrindo o iniciador...' -ForegroundColor Green

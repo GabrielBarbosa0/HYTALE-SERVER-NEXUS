@@ -29,6 +29,8 @@ public sealed partial class MainWindow : Window
 
         var windowId = Win32Interop.GetWindowIdFromWindow(WindowNative.GetWindowHandle(this));
         var appWindow = AppWindow.GetFromWindowId(windowId);
+        var iconPath = Path.Combine(AppContext.BaseDirectory, "Assets", "HytaleServerManager.ico");
+        if (File.Exists(iconPath)) appWindow.SetIcon(iconPath);
         appWindow.Resize(new SizeInt32(1240, 820));
 
         _refreshTimer.Tick += async (_, _) => await ViewModel.RefreshAsync();

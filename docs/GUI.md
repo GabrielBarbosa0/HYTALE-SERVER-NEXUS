@@ -22,6 +22,8 @@ src/HytaleServerManager/
 └── HytaleServerManager.csproj
 ```
 
+O ícone multipropósito em `Assets/HytaleServerManager.ico` é incorporado ao executável e aplicado ao `AppWindow` e ao atalho. `tools/GenerateIcon.ps1` regenera o `.ico` e a prévia PNG a partir da identidade azul com “H”.
+
 ## Fluxo de inicialização
 
 1. Carrega `%LOCALAPPDATA%\HytaleServerManager\settings.json` ou cria padrões em memória.
@@ -48,6 +50,8 @@ A interface verifica somente a presença dos arquivos, sem ler credenciais:
 O botão **Gerar código** envia `/auth login device` pela entrada padrão do servidor. A saída é analisada para detectar o código e a URL `accounts.hytale.com/device`; a confirmação oficial é aberta automaticamente uma vez e continua disponível pelo botão da interface. A mensagem de sucesso atualiza o diagnóstico.
 
 O Playit.gg continua com sua própria autenticação. A interface abre apenas páginas oficiais e o agente local; cada operador vincula sua conta, cria seu túnel UDP para `127.0.0.1:5520` e salva o endereço público correspondente.
+
+Na operação normal, o agente é criado com `CreateNoWindow` e sua saída é drenada em segundo plano, evitando console e segundo ícone na barra de tarefas. Uma instância antiga com janela também é ocultada. O fluxo **Vincular agente** reinicia em modo visível quando necessário, e a configuração **Mostrar console do Playit.gg no próximo início** permite diagnóstico manual.
 
 O console visual aceita comandos somente quando o processo foi iniciado pela própria interface. Isso evita fingir que um comando foi entregue a uma instância Java externa que não possui entrada padrão anexada.
 

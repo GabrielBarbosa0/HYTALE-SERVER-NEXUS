@@ -278,6 +278,7 @@
                             <TextBlock Text="Use o endereço do túnel criado na conta Playit deste computador." FontSize="11" Foreground="{StaticResource SubtleTextBrush}" TextWrapping="Wrap" />
                             <TextBlock Text="Porta UDP local" Foreground="{StaticResource SubtleTextBrush}" />
                             <NumberBox Value="{Binding Settings.ServerPort, Mode=TwoWay}" Minimum="1" Maximum="65535" SpinButtonPlacementMode="Compact" />
+                            <ToggleSwitch Header="Mostrar console do Playit.gg no próximo início" IsOn="{Binding Settings.ShowPlayitConsole, Mode=TwoWay}" OffContent="Oculto" OnContent="Visível" />
                             <Button Command="{Binding SaveSettingsCommand}" Content="Salvar configurações" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" />
                             <Button Command="{Binding OpenWorldCommand}" Content="Abrir pasta do mundo" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" />
                         </StackPanel>
