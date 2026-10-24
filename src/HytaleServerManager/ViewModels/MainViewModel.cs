@@ -43,6 +43,8 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     private string _consoleCommandText = "";
     private string _hytaleAuthCode = "Aguardando geração";
     private string _hytaleAuthUrl = "https://accounts.hytale.com/device";
+    private string _activeWorldName = "Nenhum";
+    private string _worldSelectionHint = "Escolha o mundo que será iniciado.";
 
     public MainViewModel(SettingsService settingsService, ServerProcessService processService, WorldDiscoveryService worldDiscoveryService, DispatcherQueue dispatcher)
     {
@@ -61,6 +63,9 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         ClearLogsCommand = new RelayCommand(() => Logs.Clear());
         SendConsoleCommand = new AsyncRelayCommand(SendConsoleCommandAsync);
         BeginHytaleAuthCommand = new AsyncRelayCommand(BeginHytaleAuthAsync);
+        CheckAuthStatusCommand = new AsyncRelayCommand(() => SendQuickCommandAsync("/auth status", "Consultando autenticação..."));
+        CheckAuthPersistenceCommand = new AsyncRelayCommand(() => SendQuickCommandAsync("/auth persistence", "Consultando persistência..."));
+        EnableEncryptedAuthCommand = new AsyncRelayCommand(() => SendQuickCommandAsync("/auth persistence Encrypted", "Ativando persistência criptografada..."));
         OpenHytaleAuthPageCommand = new RelayCommand(() => ExecuteSafely(() => ServerProcessService.OpenUrl(HytaleAuthUrl)));
         CopyAuthCodeCommand = new RelayCommand(CopyAuthCode);
         OpenPlayitDownloadCommand = new RelayCommand(() => ExecuteSafely(() => ServerProcessService.OpenUrl("https://playit.gg/download/windows")));
@@ -83,6 +88,9 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     public ICommand ClearLogsCommand { get; }
     public ICommand SendConsoleCommand { get; }
     public ICommand BeginHytaleAuthCommand { get; }
+    public ICommand CheckAuthStatusCommand { get; }
+    public ICommand CheckAuthPersistenceCommand { get; }
+    public ICommand EnableEncryptedAuthCommand { get; }
     public ICommand OpenHytaleAuthPageCommand { get; }
     public ICommand CopyAuthCodeCommand { get; }
     public ICommand OpenPlayitDownloadCommand { get; }
@@ -104,6 +112,16 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     public string ConsoleCommandText { get => _consoleCommandText; set => SetProperty(ref _consoleCommandText, value); }
     public string HytaleAuthCode { get => _hytaleAuthCode; private set => SetProperty(ref _hytaleAuthCode, value); }
     public string HytaleAuthUrl { get => _hytaleAuthUrl; private set => SetProperty(ref _hytaleAuthUrl, value); }
+    public string ActiveWorldName
+    {
+        get => _activeWorldName;
+        private set
+        {
+            if (SetProperty(ref _activeWorldName, value)) OnPropertyChanged(nameof(ActiveWorldText));
+        }
+    }
+    public string ActiveWorldText => $"Mundo: {ActiveWorldName}";
+    public string WorldSelectionHint { get => _worldSelectionHint; private set => SetProperty(ref _worldSelectionHint, value); }
     public WorldOption? SelectedWorld
     {
         get => _selectedWorld;
@@ -122,6 +140,13 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     public string SelectedWorldPath => SelectedWorld?.Path ?? "Nenhum mundo válido foi encontrado";
     public string WorldCountText => Worlds.Count == 1 ? "1 mundo encontrado" : $"{Worlds.Count} mundos encontrados";
     public bool CanSelectWorld => !ServerRunning;
+    public bool CanUseConsole => _processService.CanSendServerCommands;
+    public bool CanStartServer => !ServerRunning;
+    public string ConsoleAvailabilityText => CanUseConsole
+        ? "Console conectado ao servidor atual."
+        : ServerRunning
+            ? "Servidor iniciado por outra janela. Encerre-o no console original para recuperar os comandos."
+            : "Inicie o servidor por este painel para habilitar os comandos.";
     public bool IsHytaleInstalled => File.Exists(Settings.JavaPath) && File.Exists(Settings.ServerJarPath) && File.Exists(Settings.AssetsPath);
     public bool IsPlayitInstalled => File.Exists(Settings.PlayitPath);
     public bool IsPlayitLinked => File.Exists(PlayitConfigPath);
@@ -164,12 +189,19 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
             : snapshot.Uptime.ToString(@"hh\:mm\:ss");
         ServerStatus = ServerRunning ? "Online" : "Desligado";
         TunnelStatus = TunnelRunning ? "Conectado" : "Desligado";
+        ActiveWorldName = ServerRunning ? DetectActiveWorldName() : "Nenhum";
+        WorldSelectionHint = ServerRunning
+            ? $"Em execução: {ActiveWorldName}. Encerre o servidor antes de trocar de mundo."
+            : "Escolha o mundo que será iniciado.";
         OnPropertyChanged(nameof(MemoryText));
         OnPropertyChanged(nameof(CpuText));
         OnPropertyChanged(nameof(PortStatus));
         OnPropertyChanged(nameof(ServerStatusBrush));
         OnPropertyChanged(nameof(TunnelStatusBrush));
         OnPropertyChanged(nameof(CanSelectWorld));
+        OnPropertyChanged(nameof(CanUseConsole));
+        OnPropertyChanged(nameof(CanStartServer));
+        OnPropertyChanged(nameof(ConsoleAvailabilityText));
         RefreshSetupStatus();
         return Task.CompletedTask;
     }
@@ -180,6 +212,14 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         {
             if (SelectedWorld is null)
                 throw new InvalidOperationException("Selecione um mundo válido antes de iniciar.");
+
+            await RefreshAsync();
+            if (ServerRunning)
+            {
+                Notice = $"O mundo {ActiveWorldName} já está em execução";
+                AddLog($"O servidor já está ativo com o mundo {ActiveWorldName}. Encerre-o antes de iniciar outro.");
+                return;
+            }
 
             Notice = "Iniciando serviços...";
             ApplyMemorySettings();
@@ -265,6 +305,20 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         }
     }
 
+    private async Task SendQuickCommandAsync(string command, string notice)
+    {
+        try
+        {
+            Notice = notice;
+            await _processService.SendServerCommandAsync(command);
+        }
+        catch (Exception ex)
+        {
+            Notice = "Comando indisponível para este processo";
+            AddLog("ERRO: " + ex.Message);
+        }
+    }
+
     private void CopyAuthCode()
     {
         if (HytaleAuthCode is "Aguardando geração" or "Gerando código..." or "Inicie o servidor primeiro")
@@ -334,6 +388,21 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         if (Worlds.Count == 0) AddLog($"Nenhum mundo válido encontrado em {Settings.SavesRootPath}");
         else AddLog($"{WorldCountText}: {string.Join(", ", Worlds.Select(world => world.Name))}.");
         RefreshSetupStatus();
+    }
+
+    private string DetectActiveWorldName()
+    {
+        var lockedWorlds = Worlds
+            .Where(world => File.Exists(Path.Combine(world.Path, ".world.lock")))
+            .Select(world => world.Name)
+            .ToArray();
+
+        return lockedWorlds.Length switch
+        {
+            0 => SelectedWorldName,
+            1 => lockedWorlds[0],
+            _ => string.Join(", ", lockedWorlds)
+        };
     }
 
     private async Task PersistWorldSelectionAsync()

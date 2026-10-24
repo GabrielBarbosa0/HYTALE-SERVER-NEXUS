@@ -217,6 +217,8 @@ Evitar finalizar o Java à força, desligar o computador durante salvamento ou a
 | T15 | Comando digitado com servidor iniciado pela GUI | Comando chega à entrada padrão do servidor |
 | T16 | Clone sem aplicação publicada | Instalador publica localmente e cria o atalho |
 | T17 | Perfil sem `playit.toml` | Interface indica vinculação Playit pendente |
+| T18 | Servidor iniciado por outra janela | Mundo ativo é exibido e comandos/troca ficam desabilitados |
+| T19 | Servidor iniciado pela interface | Botões de status e persistência enviam os comandos correspondentes |
 
 O teste externo validado teve entrada bem-sucedida do jogador remoto `GleamingFjord808` e entrada local de `Saga`, com o firewall reativado.
 

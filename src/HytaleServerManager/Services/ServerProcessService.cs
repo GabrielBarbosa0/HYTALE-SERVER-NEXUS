@@ -13,6 +13,15 @@ public sealed class ServerProcessService : IDisposable
 
     public event Action<string>? LogReceived;
 
+    public bool CanSendServerCommands
+    {
+        get
+        {
+            try { return _serverProcess is { HasExited: false }; }
+            catch { return false; }
+        }
+    }
+
     public async Task StartAllAsync(AppSettings settings)
     {
         Validate(settings);

@@ -51,6 +51,7 @@
                                     <Ellipse Width="9" Height="9" Fill="{Binding ServerStatusBrush}" HorizontalAlignment="Right" />
                                 </Grid>
                                 <TextBlock Text="{Binding ServerStatus}" FontSize="24" FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding ActiveWorldText}" Foreground="{StaticResource SubtleTextBrush}" />
                                 <TextBlock Text="{Binding PortStatus}" Foreground="{StaticResource SubtleTextBrush}" />
                             </StackPanel>
                         </Border>
@@ -145,8 +146,8 @@
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
-                                <TextBox Text="{Binding ConsoleCommandText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" PlaceholderText="Digite um comando, por exemplo /auth status" FontFamily="Cascadia Mono" />
-                                <Button Grid.Column="1" Command="{Binding SendConsoleCommand}" Content="Enviar" Padding="18,9" />
+                                <TextBox Text="{Binding ConsoleCommandText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" PlaceholderText="Digite um comando, por exemplo /auth status" FontFamily="Cascadia Mono" IsEnabled="{Binding CanUseConsole}" />
+                                <Button Grid.Column="1" Command="{Binding SendConsoleCommand}" Content="Enviar" Padding="18,9" IsEnabled="{Binding CanUseConsole}" />
                             </Grid>
                         </Grid>
                     </Border>
@@ -180,10 +181,21 @@
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
-                                <Button Command="{Binding BeginHytaleAuthCommand}" Content="Gerar código" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" />
+                                <Button Command="{Binding BeginHytaleAuthCommand}" Content="Gerar código" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" IsEnabled="{Binding CanUseConsole}" />
                                 <Button Grid.Column="1" Command="{Binding OpenHytaleAuthPageCommand}" Content="Abrir confirmação" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" />
                             </Grid>
                             <Button Command="{Binding CopyAuthCodeCommand}" Content="Copiar código" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" />
+                            <TextBlock Text="AÇÕES RÁPIDAS" FontSize="10" Foreground="{StaticResource SubtleTextBrush}" FontWeight="SemiBold" CharacterSpacing="100" Margin="0,4,0,0" />
+                            <Grid ColumnSpacing="8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Button Command="{Binding CheckAuthStatusCommand}" Content="Status da autenticação" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" IsEnabled="{Binding CanUseConsole}" />
+                                <Button Grid.Column="1" Command="{Binding CheckAuthPersistenceCommand}" Content="Ver persistência" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" IsEnabled="{Binding CanUseConsole}" />
+                            </Grid>
+                            <Button Command="{Binding EnableEncryptedAuthCommand}" Content="Ativar persistência criptografada" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" IsEnabled="{Binding CanUseConsole}" />
+                            <TextBlock Text="{Binding ConsoleAvailabilityText}" FontSize="11" Foreground="{StaticResource SubtleTextBrush}" TextWrapping="Wrap" />
 
                             <Rectangle Height="1" Fill="{StaticResource CardBorderBrush}" Margin="0,4" />
 
@@ -221,7 +233,7 @@
                                       PlaceholderText="Selecione um mundo" />
                             <TextBlock Text="{Binding WorldCountText}" Foreground="{StaticResource SubtleTextBrush}" />
                             <TextBlock Text="{Binding SelectedWorldPath}" FontFamily="Cascadia Mono" FontSize="10" Foreground="{StaticResource SubtleTextBrush}" TextWrapping="Wrap" />
-                            <TextBlock Text="Para trocar, desligue o servidor atual." FontSize="11" Foreground="{StaticResource SubtleTextBrush}" TextWrapping="Wrap" />
+                            <TextBlock Text="{Binding WorldSelectionHint}" FontSize="11" Foreground="{StaticResource SubtleTextBrush}" TextWrapping="Wrap" />
                             <Button Command="{Binding ReloadWorldsCommand}" Content="Atualizar lista de mundos" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" />
                         </StackPanel>
                     </Border>
@@ -229,13 +241,13 @@
                     <Border Style="{StaticResource CardStyle}">
                         <StackPanel Spacing="14">
                             <TextBlock Text="CONTROLES" FontSize="11" Foreground="{StaticResource SubtleTextBrush}" FontWeight="SemiBold" CharacterSpacing="120" />
-                            <Button Command="{Binding StartCommand}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Padding="14" Background="{StaticResource AccentBrush}">
+                            <Button Command="{Binding StartCommand}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Padding="14" Background="{StaticResource AccentBrush}" IsEnabled="{Binding CanStartServer}">
                                 <StackPanel Orientation="Horizontal" Spacing="8">
                                     <FontIcon Glyph="&#xE768;" FontSize="14" />
                                     <TextBlock Text="Iniciar tudo" FontWeight="SemiBold" />
                                 </StackPanel>
                             </Button>
-                            <Button Command="{Binding StopCommand}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Padding="14">
+                            <Button Command="{Binding StopCommand}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Padding="14" IsEnabled="{Binding CanUseConsole}">
                                 <StackPanel Orientation="Horizontal" Spacing="8">
                                     <FontIcon Glyph="&#xE71A;" FontSize="14" />
                                     <TextBlock Text="Salvar e parar servidor" />

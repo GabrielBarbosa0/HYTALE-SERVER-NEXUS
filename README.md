@@ -21,6 +21,8 @@ O MVP atual oferece:
 - diagnóstico da instalação, autorização Hytale e vinculação do Playit.gg;
 - assistente para gerar e copiar o código de autorização Hytale, abrindo automaticamente a confirmação oficial;
 - entrada de comandos no console visual;
+- ações rápidas para consultar status e persistência da autenticação;
+- indicação explícita do mundo em execução e do motivo de o seletor estar bloqueado;
 - links oficiais para baixar e configurar o Playit.gg.
 
 ## Primeiro uso em outro computador
@@ -31,6 +33,8 @@ O MVP atual oferece:
 4. Copie o endereço público desse túnel para **Configuração > Endereço público** e salve.
 5. Selecione o mundo e inicie o servidor.
 6. Se a autorização Hytale estiver pendente, pressione **Gerar código**, abra a confirmação e autorize com a sua própria conta Hytale.
+
+O mundo só pode ser trocado com o servidor desligado. Se um servidor foi iniciado por outra janela ou pelo `.bat`, o painel consegue monitorá-lo, mas não consegue assumir sua entrada de console; encerre-o no console original antes de selecionar outro mundo.
 
 Contas, tokens, `auth.enc`, `auth.key`, `playit.toml`, mundos e endereços pessoais não são distribuídos pelo repositório.
 
