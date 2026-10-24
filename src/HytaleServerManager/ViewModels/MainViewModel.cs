@@ -16,6 +16,10 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
 {
     private static readonly Regex JoinPattern = new("Player '([^']+)' joined", RegexOptions.Compiled | RegexOptions.IgnoreCase);
     private static readonly Regex LeavePattern = new("Player '([^']+)' (left|disconnected)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+    private static readonly Regex AuthCodePattern = new(@"(?:Enter code|Code):\s*([A-Z0-9-]+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+    private static readonly Regex AuthUrlPattern = new(@"https://accounts\.hytale\.com/device(?:\?user_code=[A-Z0-9-]+)?", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+    private static readonly string PlayitConfigPath = Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "playit_gg", "playit.toml");
     private readonly SettingsService _settingsService;
     private readonly ServerProcessService _processService;
     private readonly WorldDiscoveryService _worldDiscoveryService;
@@ -34,6 +38,11 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     private string _maximumMemoryText = "4096";
     private WorldOption? _selectedWorld;
     private bool _initialized;
+    private bool _hytaleAuthConfirmed;
+    private bool _authPageOpened;
+    private string _consoleCommandText = "";
+    private string _hytaleAuthCode = "Aguardando geração";
+    private string _hytaleAuthUrl = "https://accounts.hytale.com/device";
 
     public MainViewModel(SettingsService settingsService, ServerProcessService processService, WorldDiscoveryService worldDiscoveryService, DispatcherQueue dispatcher)
     {
@@ -50,6 +59,14 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         SaveSettingsCommand = new AsyncRelayCommand(SaveSettingsAsync);
         OpenWorldCommand = new RelayCommand(() => ExecuteSafely(() => _processService.OpenWorldFolder(Settings)));
         ClearLogsCommand = new RelayCommand(() => Logs.Clear());
+        SendConsoleCommand = new AsyncRelayCommand(SendConsoleCommandAsync);
+        BeginHytaleAuthCommand = new AsyncRelayCommand(BeginHytaleAuthAsync);
+        OpenHytaleAuthPageCommand = new RelayCommand(() => ExecuteSafely(() => ServerProcessService.OpenUrl(HytaleAuthUrl)));
+        CopyAuthCodeCommand = new RelayCommand(CopyAuthCode);
+        OpenPlayitDownloadCommand = new RelayCommand(() => ExecuteSafely(() => ServerProcessService.OpenUrl("https://playit.gg/download/windows")));
+        OpenPlayitDashboardCommand = new RelayCommand(() => ExecuteSafely(() => ServerProcessService.OpenUrl("https://playit.gg/account/agents")));
+        StartPlayitSetupCommand = new RelayCommand(StartPlayitSetup);
+        ReloadWorldsCommand = new RelayCommand(LoadWorlds);
     }
 
     public AppSettings Settings { get; private set; } = new();
@@ -64,6 +81,14 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     public ICommand SaveSettingsCommand { get; }
     public ICommand OpenWorldCommand { get; }
     public ICommand ClearLogsCommand { get; }
+    public ICommand SendConsoleCommand { get; }
+    public ICommand BeginHytaleAuthCommand { get; }
+    public ICommand OpenHytaleAuthPageCommand { get; }
+    public ICommand CopyAuthCodeCommand { get; }
+    public ICommand OpenPlayitDownloadCommand { get; }
+    public ICommand OpenPlayitDashboardCommand { get; }
+    public ICommand StartPlayitSetupCommand { get; }
+    public ICommand ReloadWorldsCommand { get; }
 
     public bool ServerRunning { get => _serverRunning; private set => SetProperty(ref _serverRunning, value); }
     public bool TunnelRunning { get => _tunnelRunning; private set => SetProperty(ref _tunnelRunning, value); }
@@ -76,6 +101,9 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     public string Notice { get => _notice; private set => SetProperty(ref _notice, value); }
     public string InitialMemoryText { get => _initialMemoryText; set => SetProperty(ref _initialMemoryText, value); }
     public string MaximumMemoryText { get => _maximumMemoryText; set => SetProperty(ref _maximumMemoryText, value); }
+    public string ConsoleCommandText { get => _consoleCommandText; set => SetProperty(ref _consoleCommandText, value); }
+    public string HytaleAuthCode { get => _hytaleAuthCode; private set => SetProperty(ref _hytaleAuthCode, value); }
+    public string HytaleAuthUrl { get => _hytaleAuthUrl; private set => SetProperty(ref _hytaleAuthUrl, value); }
     public WorldOption? SelectedWorld
     {
         get => _selectedWorld;
@@ -85,6 +113,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
             Settings.WorldPath = value.Path;
             OnPropertyChanged(nameof(SelectedWorldName));
             OnPropertyChanged(nameof(SelectedWorldPath));
+            RefreshSetupStatus();
             Notice = $"Mundo selecionado: {value.Name}";
             if (_initialized) _ = PersistWorldSelectionAsync();
         }
@@ -93,6 +122,16 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     public string SelectedWorldPath => SelectedWorld?.Path ?? "Nenhum mundo válido foi encontrado";
     public string WorldCountText => Worlds.Count == 1 ? "1 mundo encontrado" : $"{Worlds.Count} mundos encontrados";
     public bool CanSelectWorld => !ServerRunning;
+    public bool IsHytaleInstalled => File.Exists(Settings.JavaPath) && File.Exists(Settings.ServerJarPath) && File.Exists(Settings.AssetsPath);
+    public bool IsPlayitInstalled => File.Exists(Settings.PlayitPath);
+    public bool IsPlayitLinked => File.Exists(PlayitConfigPath);
+    public bool IsHytaleAuthenticated => _hytaleAuthConfirmed || (SelectedWorld is not null && File.Exists(Path.Combine(SelectedWorld.Path, "auth.enc")));
+    public string HytaleInstallStatus => IsHytaleInstalled ? "Hytale pronto" : "Instalação do Hytale não encontrada";
+    public string PlayitInstallStatus => IsPlayitInstalled ? "Agente Playit instalado" : "Agente Playit não instalado";
+    public string PlayitLinkStatus => IsPlayitLinked ? "Agente vinculado neste computador" : "Vinculação do Playit pendente";
+    public string HytaleAuthStatus => IsHytaleAuthenticated ? "Servidor Hytale autorizado" : "Autorização Hytale pendente";
+    public Brush HytaleSetupBrush => new SolidColorBrush(IsHytaleInstalled && IsHytaleAuthenticated ? Color.FromArgb(255, 80, 227, 164) : Color.FromArgb(255, 255, 200, 87));
+    public Brush PlayitSetupBrush => new SolidColorBrush(IsPlayitInstalled && IsPlayitLinked ? Color.FromArgb(255, 80, 227, 164) : Color.FromArgb(255, 255, 200, 87));
     public string PlayerCountText => _players.Count == 1 ? "1 jogador" : $"{_players.Count} jogadores";
     public string MemoryText => $"{MemoryMb:N0} MB";
     public string CpuText => $"{CpuPercent:N1}%";
@@ -131,6 +170,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         OnPropertyChanged(nameof(ServerStatusBrush));
         OnPropertyChanged(nameof(TunnelStatusBrush));
         OnPropertyChanged(nameof(CanSelectWorld));
+        RefreshSetupStatus();
         return Task.CompletedTask;
     }
 
@@ -192,6 +232,69 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         AddLog($"Endereço copiado: {Settings.PublicAddress}");
     }
 
+    private async Task SendConsoleCommandAsync()
+    {
+        try
+        {
+            var command = ConsoleCommandText.Trim();
+            if (command.Length == 0) return;
+            await _processService.SendServerCommandAsync(command);
+            ConsoleCommandText = "";
+        }
+        catch (Exception ex)
+        {
+            Notice = "Não foi possível enviar o comando";
+            AddLog("ERRO: " + ex.Message);
+        }
+    }
+
+    private async Task BeginHytaleAuthAsync()
+    {
+        try
+        {
+            HytaleAuthCode = "Gerando código...";
+            HytaleAuthUrl = "https://accounts.hytale.com/device";
+            _authPageOpened = false;
+            await _processService.SendServerCommandAsync("/auth login device");
+            Notice = "Aguardando código de autorização do Hytale";
+        }
+        catch (Exception ex)
+        {
+            HytaleAuthCode = "Inicie o servidor primeiro";
+            AddLog("ERRO: " + ex.Message);
+        }
+    }
+
+    private void CopyAuthCode()
+    {
+        if (HytaleAuthCode is "Aguardando geração" or "Gerando código..." or "Inicie o servidor primeiro")
+        {
+            Notice = "Gere o código antes de copiá-lo";
+            return;
+        }
+
+        var package = new DataPackage();
+        package.SetText(HytaleAuthCode);
+        Clipboard.SetContent(package);
+        Notice = "Código de autorização copiado";
+    }
+
+    private void StartPlayitSetup()
+    {
+        try
+        {
+            _processService.StartTunnelSetup(Settings);
+            ServerProcessService.OpenUrl("https://playit.gg/account/agents");
+            Notice = "Playit aberto para vinculação";
+        }
+        catch (Exception ex)
+        {
+            AddLog("ERRO: " + ex.Message);
+            ServerProcessService.OpenUrl("https://playit.gg/download/windows");
+            Notice = "Baixe o agente oficial do Playit.gg";
+        }
+    }
+
     private async Task SaveSettingsAsync()
     {
         try
@@ -230,6 +333,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         OnPropertyChanged(nameof(WorldCountText));
         if (Worlds.Count == 0) AddLog($"Nenhum mundo válido encontrado em {Settings.SavesRootPath}");
         else AddLog($"{WorldCountText}: {string.Join(", ", Worlds.Select(world => world.Name))}.");
+        RefreshSetupStatus();
     }
 
     private async Task PersistWorldSelectionAsync()
@@ -257,7 +361,59 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
 
         var leave = LeavePattern.Match(line);
         if (leave.Success && _players.Remove(leave.Groups[1].Value)) Players.Remove(leave.Groups[1].Value);
+
+        var authCode = AuthCodePattern.Match(line);
+        if (authCode.Success)
+        {
+            HytaleAuthCode = authCode.Groups[1].Value.ToUpperInvariant();
+            HytaleAuthUrl = $"https://accounts.hytale.com/device?user_code={Uri.EscapeDataString(HytaleAuthCode)}";
+            OpenAuthPageOnce();
+        }
+
+        var authUrl = AuthUrlPattern.Match(line);
+        if (authUrl.Success)
+        {
+            HytaleAuthUrl = authUrl.Value;
+            Notice = "Código Hytale pronto para confirmação";
+            if (HytaleAuthUrl.Contains("user_code=", StringComparison.OrdinalIgnoreCase)) OpenAuthPageOnce();
+        }
+
+        if (line.Contains("Authentication successful", StringComparison.OrdinalIgnoreCase))
+        {
+            _hytaleAuthConfirmed = true;
+            Notice = "Servidor Hytale autorizado";
+            RefreshSetupStatus();
+        }
         OnPropertyChanged(nameof(PlayerCountText));
+    }
+
+    private void OpenAuthPageOnce()
+    {
+        if (_authPageOpened) return;
+        try
+        {
+            ServerProcessService.OpenUrl(HytaleAuthUrl);
+            _authPageOpened = true;
+        }
+        catch (Exception ex)
+        {
+            Notice = "Copie o código e abra a confirmação manualmente";
+            Logs.Add($"[{DateTime.Now:HH:mm:ss}] ERRO ao abrir a confirmação: {ex.Message}");
+        }
+    }
+
+    private void RefreshSetupStatus()
+    {
+        OnPropertyChanged(nameof(IsHytaleInstalled));
+        OnPropertyChanged(nameof(IsPlayitInstalled));
+        OnPropertyChanged(nameof(IsPlayitLinked));
+        OnPropertyChanged(nameof(IsHytaleAuthenticated));
+        OnPropertyChanged(nameof(HytaleInstallStatus));
+        OnPropertyChanged(nameof(PlayitInstallStatus));
+        OnPropertyChanged(nameof(PlayitLinkStatus));
+        OnPropertyChanged(nameof(HytaleAuthStatus));
+        OnPropertyChanged(nameof(HytaleSetupBrush));
+        OnPropertyChanged(nameof(PlayitSetupBrush));
     }
 
     private void ExecuteSafely(Action action)

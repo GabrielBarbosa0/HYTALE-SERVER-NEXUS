@@ -36,6 +36,31 @@ src/HytaleServerManager/
 
 O seletor é desabilitado enquanto o servidor está ligado. A escolha é persistida automaticamente em `settings.json`, e o nome exibido no topo acompanha o mundo atual.
 
+## Assistente de primeira execução
+
+A interface verifica somente a presença dos arquivos, sem ler credenciais:
+
+- Java, servidor e assets confirmam a instalação local do Hytale;
+- `auth.enc` na pasta do mundo indica que já houve persistência de autorização;
+- o executável confirma a instalação do agente Playit.gg;
+- `%LOCALAPPDATA%\playit_gg\playit.toml` indica que o agente já foi vinculado neste perfil do Windows.
+
+O botão **Gerar código** envia `/auth login device` pela entrada padrão do servidor. A saída é analisada para detectar o código e a URL `accounts.hytale.com/device`; a confirmação oficial é aberta automaticamente uma vez e continua disponível pelo botão da interface. A mensagem de sucesso atualiza o diagnóstico.
+
+O Playit.gg continua com sua própria autenticação. A interface abre apenas páginas oficiais e o agente local; cada operador vincula sua conta, cria seu túnel UDP para `127.0.0.1:5520` e salva o endereço público correspondente.
+
+O console visual aceita comandos somente quando o processo foi iniciado pela própria interface. Isso evita fingir que um comando foi entregue a uma instância Java externa que não possui entrada padrão anexada.
+
+## Instalação a partir do repositório
+
+`INSTALAR-E-INICIAR.bat` chama `scripts/Install.ps1`, que:
+
+1. localiza um SDK .NET 10 existente;
+2. quando necessário, instala o SDK oficial pelo `winget`;
+3. restaura e publica a aplicação autocontida em `%LOCALAPPDATA%\HytaleServerManager\app`;
+4. cria o atalho na Área de Trabalho;
+5. abre o aplicativo publicado.
+
 ## Encerramento
 
 O botão **Salvar e parar servidor** escreve `/stop` na entrada padrão do processo e aguarda até 30 segundos. Se o servidor não encerrar, a interface informa o problema e não força a finalização. Isso evita corrupção do mundo.
@@ -54,6 +79,7 @@ Nesta primeira versão, a interface só consegue enviar `/stop` para a instânci
 
 - Nenhuma credencial é exibida ou salva pela interface.
 - `auth.enc` continua na pasta do mundo.
+- `auth.key` e `playit.toml` também permanecem locais e fora do Git.
 - O agente Playit.gg usa a instalação local já autorizada.
 - O firewall não é desligado nem alterado.
 - A interface não oferece encerramento forçado do mundo.
@@ -84,4 +110,5 @@ dotnet publish src/HytaleServerManager/HytaleServerManager.csproj `
 5. notificações e ícone na bandeja;
 6. diagnóstico detalhado do túnel e firewall;
 7. instalador e atualização automática da interface;
-8. testes unitários e de integração dos serviços.
+8. testes unitários e de integração dos serviços;
+9. leitura local, sem segredos, do endereço público anunciado pelo agente Playit.

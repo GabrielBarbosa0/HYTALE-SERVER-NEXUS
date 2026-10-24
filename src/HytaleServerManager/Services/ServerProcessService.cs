@@ -16,7 +16,7 @@ public sealed class ServerProcessService : IDisposable
     public async Task StartAllAsync(AppSettings settings)
     {
         Validate(settings);
-        StartTunnel(settings);
+        StartTunnel(settings, minimized: true);
 
         if (FindServerProcess(settings) is not null)
         {
@@ -93,6 +93,31 @@ public sealed class ServerProcessService : IDisposable
         }
     }
 
+    public async Task SendServerCommandAsync(string command)
+    {
+        if (string.IsNullOrWhiteSpace(command)) return;
+        if (_serverProcess is null || _serverProcess.HasExited)
+            throw new InvalidOperationException("O console só aceita comandos para um servidor iniciado por esta interface.");
+
+        await _serverProcess.StandardInput.WriteLineAsync(command.Trim());
+        await _serverProcess.StandardInput.FlushAsync();
+        WriteLog($"> {command.Trim()}");
+    }
+
+    public void StartTunnelSetup(AppSettings settings)
+    {
+        if (!File.Exists(settings.PlayitPath))
+            throw new FileNotFoundException("Instale o agente oficial do Playit.gg antes de vinculá-lo.", settings.PlayitPath);
+        StartTunnel(settings, minimized: false);
+    }
+
+    public static void OpenUrl(string url)
+    {
+        if (!Uri.TryCreate(url, UriKind.Absolute, out var uri) || uri.Scheme is not ("http" or "https"))
+            throw new InvalidOperationException("O endereço recebido não é uma URL segura.");
+        Process.Start(new ProcessStartInfo(uri.AbsoluteUri) { UseShellExecute = true });
+    }
+
     public void StopTunnel()
     {
         var process = _playitProcess ?? FindPlayitProcess();
@@ -160,7 +185,7 @@ public sealed class ServerProcessService : IDisposable
         Process.Start(new ProcessStartInfo("explorer.exe", $"\"{path}\"") { UseShellExecute = true });
     }
 
-    private void StartTunnel(AppSettings settings)
+    private void StartTunnel(AppSettings settings, bool minimized)
     {
         _playitProcess = FindPlayitProcess();
         if (_playitProcess is { HasExited: false })
@@ -175,7 +200,7 @@ public sealed class ServerProcessService : IDisposable
             FileName = settings.PlayitPath,
             WorkingDirectory = Path.GetDirectoryName(settings.PlayitPath)!,
             UseShellExecute = true,
-            WindowStyle = ProcessWindowStyle.Minimized
+            WindowStyle = minimized ? ProcessWindowStyle.Minimized : ProcessWindowStyle.Normal
         });
     }
 

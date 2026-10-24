@@ -123,10 +123,11 @@
                     </Grid>
 
                     <Border Style="{StaticResource CardStyle}" Padding="0">
-                        <Grid Height="310">
+                        <Grid Height="360">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="52" />
                                 <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
                             <Grid Padding="18,0">
                                 <TextBlock Text="CONSOLE AO VIVO" FontWeight="SemiBold" VerticalAlignment="Center" />
@@ -139,6 +140,14 @@
                                     </DataTemplate>
                                 </ListView.ItemTemplate>
                             </ListView>
+                            <Grid Grid.Row="2" Padding="12" ColumnSpacing="8" Background="#B0080C13">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBox Text="{Binding ConsoleCommandText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" PlaceholderText="Digite um comando, por exemplo /auth status" FontFamily="Cascadia Mono" />
+                                <Button Grid.Column="1" Command="{Binding SendConsoleCommand}" Content="Enviar" Padding="18,9" />
+                            </Grid>
                         </Grid>
                     </Border>
                 </StackPanel>
@@ -146,6 +155,61 @@
 
             <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
                 <StackPanel Spacing="18">
+                    <Border Style="{StaticResource CardStyle}">
+                        <StackPanel Spacing="12">
+                            <TextBlock Text="PRIMEIRA EXECUÇÃO" FontSize="11" Foreground="{StaticResource SubtleTextBrush}" FontWeight="SemiBold" CharacterSpacing="120" />
+
+                            <Grid ColumnSpacing="10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Ellipse Width="9" Height="9" Fill="{Binding HytaleSetupBrush}" VerticalAlignment="Center" />
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock Text="{Binding HytaleInstallStatus}" FontWeight="SemiBold" />
+                                    <TextBlock Text="{Binding HytaleAuthStatus}" FontSize="11" Foreground="{StaticResource SubtleTextBrush}" />
+                                </StackPanel>
+                            </Grid>
+
+                            <TextBlock Text="Autorização do Hytale" FontSize="11" Foreground="{StaticResource SubtleTextBrush}" />
+                            <Border Background="#90101925" BorderBrush="{StaticResource CardBorderBrush}" BorderThickness="1" CornerRadius="9" Padding="10">
+                                <TextBlock Text="{Binding HytaleAuthCode}" FontFamily="Cascadia Mono" FontSize="17" FontWeight="SemiBold" HorizontalAlignment="Center" />
+                            </Border>
+                            <Grid ColumnSpacing="8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Button Command="{Binding BeginHytaleAuthCommand}" Content="Gerar código" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" />
+                                <Button Grid.Column="1" Command="{Binding OpenHytaleAuthPageCommand}" Content="Abrir confirmação" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" />
+                            </Grid>
+                            <Button Command="{Binding CopyAuthCodeCommand}" Content="Copiar código" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" />
+
+                            <Rectangle Height="1" Fill="{StaticResource CardBorderBrush}" Margin="0,4" />
+
+                            <Grid ColumnSpacing="10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Ellipse Width="9" Height="9" Fill="{Binding PlayitSetupBrush}" VerticalAlignment="Center" />
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock Text="{Binding PlayitInstallStatus}" FontWeight="SemiBold" />
+                                    <TextBlock Text="{Binding PlayitLinkStatus}" FontSize="11" Foreground="{StaticResource SubtleTextBrush}" />
+                                </StackPanel>
+                            </Grid>
+                            <Grid ColumnSpacing="8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Button Command="{Binding OpenPlayitDownloadCommand}" Content="Baixar Playit" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" />
+                                <Button Grid.Column="1" Command="{Binding StartPlayitSetupCommand}" Content="Vincular agente" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" />
+                            </Grid>
+                            <Button Command="{Binding OpenPlayitDashboardCommand}" Content="Abrir painel do Playit.gg" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" />
+                        </StackPanel>
+                    </Border>
+
                     <Border Style="{StaticResource CardStyle}">
                         <StackPanel Spacing="10">
                             <TextBlock Text="MUNDO" FontSize="11" Foreground="{StaticResource SubtleTextBrush}" FontWeight="SemiBold" CharacterSpacing="120" />
@@ -158,6 +222,7 @@
                             <TextBlock Text="{Binding WorldCountText}" Foreground="{StaticResource SubtleTextBrush}" />
                             <TextBlock Text="{Binding SelectedWorldPath}" FontFamily="Cascadia Mono" FontSize="10" Foreground="{StaticResource SubtleTextBrush}" TextWrapping="Wrap" />
                             <TextBlock Text="Para trocar, desligue o servidor atual." FontSize="11" Foreground="{StaticResource SubtleTextBrush}" TextWrapping="Wrap" />
+                            <Button Command="{Binding ReloadWorldsCommand}" Content="Atualizar lista de mundos" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" />
                         </StackPanel>
                     </Border>
 
@@ -198,6 +263,7 @@
                             <TextBlock Text="CONFIGURAÇÃO" FontSize="11" Foreground="{StaticResource SubtleTextBrush}" FontWeight="SemiBold" CharacterSpacing="120" />
                             <TextBlock Text="Endereço público" Foreground="{StaticResource SubtleTextBrush}" />
                             <TextBox Text="{Binding Settings.PublicAddress, Mode=TwoWay}" />
+                            <TextBlock Text="Use o endereço do túnel criado na conta Playit deste computador." FontSize="11" Foreground="{StaticResource SubtleTextBrush}" TextWrapping="Wrap" />
                             <TextBlock Text="Porta UDP local" Foreground="{StaticResource SubtleTextBrush}" />
                             <NumberBox Value="{Binding Settings.ServerPort, Mode=TwoWay}" Minimum="1" Maximum="65535" SpinButtonPlacementMode="Compact" />
                             <Button Command="{Binding SaveSettingsCommand}" Content="Salvar configurações" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" />
@@ -223,4 +289,3 @@
         </Grid>
     </Grid>
 </Window>
-

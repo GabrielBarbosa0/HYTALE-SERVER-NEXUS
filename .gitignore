@@ -1,5 +1,6 @@
 # Credenciais e autenticação
 auth.enc
+auth.key
 *.token
 *.secret
 playit.toml

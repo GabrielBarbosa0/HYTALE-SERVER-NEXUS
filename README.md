@@ -4,7 +4,7 @@ Aplicativo WinUI 3 em C# para escolher e controlar mundos do servidor dedicado d
 
 ## Interface gráfica
 
-Execute `INICIAR-PAINEL.bat` ou o atalho **Iniciador do Servidor Hytale** na Área de Trabalho.
+Na primeira vez, execute `INSTALAR-E-INICIAR.bat`. Nas próximas vezes, use `INICIAR-PAINEL.bat` ou o atalho **Iniciador do Servidor Hytale** na Área de Trabalho. Se a interface ainda não estiver instalada, `INICIAR-PAINEL.bat` chama o instalador automaticamente.
 
 O MVP atual oferece:
 
@@ -18,6 +18,21 @@ O MVP atual oferece:
 - console ao vivo com rolagem automática;
 - configuração persistente de memória, porta e endereço;
 - acesso rápido à pasta do mundo.
+- diagnóstico da instalação, autorização Hytale e vinculação do Playit.gg;
+- assistente para gerar e copiar o código de autorização Hytale, abrindo automaticamente a confirmação oficial;
+- entrada de comandos no console visual;
+- links oficiais para baixar e configurar o Playit.gg.
+
+## Primeiro uso em outro computador
+
+1. Instale o Hytale pelo launcher oficial e tenha pelo menos um save com `config.json`.
+2. Baixe este repositório e execute `INSTALAR-E-INICIAR.bat`. Se necessário, ele instala o SDK .NET 10 oficial pelo `winget`, publica a aplicação localmente e cria o atalho.
+3. No painel, use **Baixar Playit** e depois **Vincular agente**. Entre na sua própria conta e crie um túnel UDP para `127.0.0.1:5520`.
+4. Copie o endereço público desse túnel para **Configuração > Endereço público** e salve.
+5. Selecione o mundo e inicie o servidor.
+6. Se a autorização Hytale estiver pendente, pressione **Gerar código**, abra a confirmação e autorize com a sua própria conta Hytale.
+
+Contas, tokens, `auth.enc`, `auth.key`, `playit.toml`, mundos e endereços pessoais não são distribuídos pelo repositório.
 
 ## Uso rápido
 
@@ -40,7 +55,7 @@ INICIAR-CAVALEIROS-CLT.bat --check
 
 - Hytale instalado pelo launcher oficial.
 - Um ou mais mundos com `config.json` em `%APPDATA%\Hytale\UserData\Saves`.
-- Agente Playit.gg `1.0.12` em `%LOCALAPPDATA%\PlayitGG\playit-windows-x86_64-signed.exe`.
+- Agente Playit.gg em `%LOCALAPPDATA%\PlayitGG\playit-windows-x86_64-signed.exe`.
 - Cópia local de recuperação em `tools\playit-windows-x86_64-signed.exe` (ignorada pelo Git).
 - Túnel Playit.gg configurado para encaminhar o endereço público à porta local UDP `5520`.
 - Autenticação do servidor persistida no arquivo `auth.enc` do mundo.

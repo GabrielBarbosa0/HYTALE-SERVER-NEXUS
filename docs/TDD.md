@@ -101,9 +101,12 @@ Parâmetros relevantes:
 
 O servidor Hytale opera em modo autenticado. No primeiro uso, ou se a sessão for revogada, o console pode solicitar `/auth login` e uma confirmação no navegador. Depois de concluída com persistência criptografada, o arquivo `auth.enc` fica na pasta do mundo.
 
+Na interface gráfica, **Gerar código** envia `/auth login device`. O iniciador reconhece na saída o código e a URL de confirmação, apresenta ambos ao operador e pode abrir a página oficial. O operador ainda precisa entrar e confirmar com sua própria conta; o iniciador não captura senha, token ou sessão do navegador.
+
 Regras de segurança:
 
 - nunca adicionar `auth.enc` ao Git;
+- nunca adicionar `auth.key` ou `%LOCALAPPDATA%\playit_gg\playit.toml` ao Git;
 - nunca registrar tokens, URLs de confirmação ou segredos do Playit.gg na documentação;
 - realizar confirmações somente nas páginas oficiais abertas pelo fluxo de autenticação;
 - se a autenticação expirar, refazer o login pelo console em vez de copiar credenciais de outro computador.
@@ -151,6 +154,8 @@ Abrir o launcher oficial para verificar ou reparar a instalação. Os caminhos u
 ### Playit.gg não encontrado
 
 O iniciador primeiro procura `%LOCALAPPDATA%\PlayitGG\playit-windows-x86_64-signed.exe`. Se estiver ausente, ele tenta restaurar a partir de `tools\playit-windows-x86_64-signed.exe`. Se ambas as cópias estiverem ausentes, reinstalar a versão validada. O executável local é ignorado pelo Git e não deve ser publicado sem revisar licença, procedência e política de distribuição.
+
+Na interface gráfica, **Baixar Playit** abre a página oficial e **Vincular agente** abre o programa junto ao painel de agentes. Um novo computador precisa usar sua própria conta, seu próprio agente, seu próprio túnel UDP e seu próprio endereço público.
 
 ### Porta `5520` já em uso
 
@@ -207,6 +212,11 @@ Evitar finalizar o Java à força, desligar o computador durante salvamento ou a
 | T10 | Quatro saves válidos instalados | Os quatro aparecem no seletor em ordem alfabética |
 | T11 | Mundo selecionado e aplicativo reaberto | A última seleção é restaurada |
 | T12 | Servidor em execução | O seletor de mundo fica desabilitado |
+| T13 | Mundo sem `auth.enc` | Assistente indica autorização Hytale pendente |
+| T14 | Saída contém código e URL de autorização | Interface apresenta código e abre apenas URL HTTPS oficial |
+| T15 | Comando digitado com servidor iniciado pela GUI | Comando chega à entrada padrão do servidor |
+| T16 | Clone sem aplicação publicada | Instalador publica localmente e cria o atalho |
+| T17 | Perfil sem `playit.toml` | Interface indica vinculação Playit pendente |
 
 O teste externo validado teve entrada bem-sucedida do jogador remoto `GleamingFjord808` e entrada local de `Saga`, com o firewall reativado.
 
